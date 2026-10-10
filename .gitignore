@@ -1,5 +1,6 @@
 .idea
 
+.cac
 .codemate
 .opencode
 .codeagent
@@ -18,10 +19,16 @@ __pycache__/
 .env
 .vscode/
 .history/
+.dist/
 
+.test-reports
 .coverage
 .coverage.*
 .mypy_cache/
 .pytest_cache/
 .ruff_cache/
 htmlcov/
+ut_cov_html/
+
+# codegraph index cache
+.codegraph/
