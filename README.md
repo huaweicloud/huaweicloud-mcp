@@ -9,6 +9,8 @@
 
 - **[RFS MCP](server/mcp_server_rfs)**：资源编排服务——HCL 模板一键部署为资源栈、
   执行计划干跑预览、失败部署根因诊断、安全下线。
+- **[RC MCP](server/mcp_server_rc)**：资源中心——全局资源检索与分组管理、资源关系
+  查询、ResourceQL 高级查询。
 
 ## 开发者文档
 
