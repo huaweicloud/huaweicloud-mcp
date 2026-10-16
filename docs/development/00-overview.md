@@ -4,7 +4,7 @@
 
 ## 这个项目是什么
 
-`huaweicloud-mcp` 是一个华为云服务的 MCP Server 共享仓库。每个服务是一个独立可发布的包（`mcp-server-huaweicloud-<service>`），由 MCP 客户端（Cursor / Claude Desktop / Trae / 自研 Agent）加载，通过**场景化工具**驱动该云服务。
+`huaweicloud-mcp` 是一个华为云服务的 MCP Server 共享仓库。每个服务是一个独立可发布的包（`mcp_server_<service>`），由 MCP 客户端（Cursor / Claude Desktop / Trae / 自研 Agent）加载，通过**场景化工具**驱动该云服务。
 
 ## 你应该先知道的三个事实
 
@@ -32,10 +32,10 @@
 ## 快速验证一个服务
 
 ```bash
-cd server/mcp_server_vpc          # 或 server/mcp_server_rfs
+cd server/mcp_server_vpc     # 或 server/mcp_server_rfs
 uv sync
 export HUAWEICLOUD_ACCESS_KEY=... HUAWEICLOUD_SECRET_KEY=... HUAWEICLOUD_REGION=cn-north-4
-uv run mcp-server-huaweicloud-vpc
+uv run mcp_server_vpc
 uv run pytest --cov                # ruff / mypy / pytest 详见 09
 ```
 

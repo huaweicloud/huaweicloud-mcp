@@ -10,7 +10,7 @@
         stdio (本地默认)          streamable-http (远程)
                  │                         │
 ┌───────────────▼─────────────────────────▼───────────────────┐
-│              server/mcp_server_<service>                     │
+│              server/mcp_server_<service>                │
 │                                                              │
 │  tools/      场景工具层：@server.tool() 注册、参数校验、       │
 │              @guard 风险分级声明（拦截由 middleware 执行）、    │
@@ -43,23 +43,23 @@ MCP（Model Context Protocol）是 LLM 与外部工具/数据源通信的协议�
 
 ## 1.3 技术决策总览
 
-| 决策项 | 结论 |
-|---|---|
-| 语言 | Python，最低 **3.10** |
-| MCP SDK | 官方 `mcp` **2.x**（`MCPServer`；mcp 2.x 起 FastMCP 已更名） |
-| 云 API 调用 | 华为云官方 SDK（`huaweicloudsdk-core` + `huaweicloudsdk-<service>`，同步） |
-| 仓库结构 | Monorepo：`server/mcp_server_<service>/`，每服务独立可发布包 |
-| 公共能力 | 共享核心包 `libs/huaweicloud_mcp_core`（独立发布 `huaweicloud-mcp-core`） |
-| 认证 | 环境变量 + project_id 由核心包调 IAM 自动解析，支持手动覆盖 |
-| STS 临时凭证 | 可选支持（`HUAWEICLOUD_SECURITY_TOKEN`） |
-| 传输协议 | stdio（默认）+ streamable-http，**必须**同时支持 |
-| 工具粒度 | **场景化粗粒度**（一个用户意图一个工具，可编排多个 API） |
-| 代码分层 | **强制三层**：tools → service → client |
+| 决策项 | 结论                                                                           |
+|---|------------------------------------------------------------------------------|
+| 语言 | Python，最低 **3.10**                                                           |
+| MCP SDK | 官方 `mcp` **2.x**（`MCPServer`；mcp 2.x 起 FastMCP 已更名）                          |
+| 云 API 调用 | 华为云官方 SDK（`huaweicloudsdk-core` + `huaweicloudsdk-<service>`，同步）             |
+| 仓库结构 | Monorepo：`server/mcp_server_<service>/`，每服务独立可发布包                            |
+| 公共能力 | 共享核心包 `libs/huaweicloud_mcp_core`（独立发布 `huaweicloud-mcp-core`）               |
+| 认证 | 环境变量 + project_id 由核心包调 IAM 自动解析，支持手动覆盖                                      |
+| STS 临时凭证 | 可选支持（`HUAWEICLOUD_SECURITY_TOKEN`）                                           |
+| 传输协议 | stdio（默认）+ streamable-http，**必须**同时支持                                        |
+| 工具粒度 | **场景化粗粒度**（一个用户意图一个工具，可编排多个 API）                                             |
+| 代码分层 | **强制三层**：tools → service → client                                            |
 | 安全 | READ/WRITE/DANGEROUS 分级 + confirm + 只读模式 + **护栏**（保护名单/脱敏/审计，middleware 自动装） |
-| 输出 | 结构化 JSON + token 预算（默认 20 条、字段截断、分页） |
-| 工程化 | uv + ruff + mypy（strict）+ pytest（覆盖率 ≥ 80%）+ CI 全绿才可合入 |
-| 文档 | 双语 README，固定章节模板 |
-| 发布 | PyPI（`mcp-server-huaweicloud-<service>`）+ git subdirectory 双渠道 |
+| 输出 | 结构化 JSON + token 预算（默认 20 条、字段截断、分页）                                         |
+| 工程化 | uv + ruff + mypy（strict）+ pytest（覆盖率 ≥ 80%）+ CI 全绿才可合入                       |
+| 文档 | 双语 README，固定章节模板                                                             |
+| 发布 | 源码 git subdirectory 方式使用                                                     |
 
 ## 1.4 仓库布局
 
@@ -67,13 +67,13 @@ MCP（Model Context Protocol）是 LLM 与外部工具/数据源通信的协议�
 huaweicloud-mcp/
 ├── docs/development/                  # 开发者文档（本目录）+ 脚手架模板 template/
 ├── server/                           # 所有服务的 MCP Server
-│   ├── mcp_server_rfs/               # 参考实现（完整测试）
-│   ├── mcp_server_vpc/               # 参考实现（实战篇产物）
+│   ├── mcp_server_rfs/          # 参考实现（完整测试）
+│   ├── mcp_server_vpc/          # 参考实现（实战篇产物）
 │   └── mcp_server_<service>/
 │       ├── pyproject.toml            # 独立可发布包
 │       ├── uv.lock
 │       ├── README.md / README_zh.md  # 双语（必需）
-│       ├── src/mcp_server_<svc>/
+│       ├── src/mcp_server_<service>/
 │       │   ├── main.py               # 入口
 │       │   ├── server.py             # MCPServer 构建（build_server）
 │       │   ├── tools/                # 第 1 层
@@ -84,7 +84,7 @@ huaweicloud-mcp/
 │   └── huaweicloud_mcp_core/         # 公共核心包（含 tests、py.typed）
 ├── DEVELOPMENT.md                   # 迁移索引页（指向本目录）
 ├── DEVELOPMENT_SPEC2.md              # 旧单文件规范（备份，见 docs/development/README.md）
-├── AGENTS.md / README.md / README_zh.md
+├── README.md / README_zh.md
 └── LICENSE
 ```
 
@@ -109,15 +109,14 @@ huaweicloud-mcp/
 
 | 对象 | 规则 | 示例 |
 |---|---|---|
-| 服务目录 | `mcp_server_<service>`，小写下划线 | `mcp_server_ecs`、`mcp_server_rds_mysql` |
-| PyPI 包名（dist） | `mcp-server-huaweicloud-<service>` | `mcp-server-huaweicloud-ecs` |
-| Python 包名（import） | 与目录一致 | `mcp_server_ecs` |
-| 可执行命令 | 与 dist 名一致 | `mcp-server-huaweicloud-ecs` |
+| 服务目录 | `mcp_server_<service>`，连字符分隔 | `mcp_server_ecs`、`mcp_server_rds_mysql` |
+| Python 包名（import） | `mcp_server_<service>`，下划线分隔 | `mcp_server_ecs` |
+| 可执行命令 | 与服务目录一致 | `mcp_server_ecs` |
 | MCP server name | `huaweicloud-<service>` | `MCPServer("huaweicloud-ecs")`（build_server 生成） |
-| 服务名取值 | 与控制台产品名对应，多单词用下划线 | `rds_mysql`、`gaussdb`、`functiongraph` |
+| 服务名取值 | 与控制台产品名对应，多单词用连字符 | `rds-mysql`、`gaussdb`、`functiongraph` |
 
 **禁止**：同一服务拆成多个包；目录名与 dist 名、import 名不一致。
 
-> dist 名（`mcp-server-huaweicloud-ecs`）与 import 名（`mcp_server_ecs`）不一致，hatchling 无法自动定位包——pyproject **必须**显式配置 `[tool.hatch.build.targets.wheel] packages = ["src/mcp_server_ecs"]`。
+> 分发名（`mcp_server_ecs`）与导入名（`mcp_server_ecs`）不一致，hatchling 无法自动定位包——pyproject **必须**显式配置 `[tool.hatch.build.targets.wheel] packages = ["src/mcp_server_ecs"]`。
 
 下一站：[02-core.md](02-core.md) 讲核心包。
