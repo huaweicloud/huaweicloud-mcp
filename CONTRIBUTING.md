@@ -1,14 +1,8 @@
-# 为 huaweicloud-mcp 做贡献
+# 华为云 MCP Server 开发规范（已迁移）
 
-首先，感谢您考虑为 huaweicloud-mcp 做出贡献！🎉
+> **本文件已降级为索引页。** 完整开发规范已按功能特性拆分到 [`docs/development/`](docs/development/README.md) 目录，并补充手把手教程与样例。本文仅保留迁移说明与对外入口。
 
-## 行为准则
-
-本项目及所有参与者受[行为准则](CODE_OF_CONDUCT.md)约束。参与即表示您认同并遵守该准则。
-
-## 如何贡献？
-
-完整开发规范已按功能特性拆分到 [`docs/development/`](docs/development/README.md) 目录，并补充手把手教程与样例。本文仅保留迁移说明与对外入口。
+## 去哪里读
 
 **开发者文档主入口**：[`docs/development/README.md`](docs/development/README.md)
 
@@ -27,6 +21,8 @@
 | §11 工程化 / §14 发布 / §12 文档 / §10 传输 | [`docs/development/09-engineering-release.md`](docs/development/09-engineering-release.md) |
 | 总览与导读 | [`docs/development/00-overview.md`](docs/development/00-overview.md) |
 
-## 许可证
+## 治理声明
 
-通过贡献，您同意您的贡献将按照 MIT 许可。
+- 文档与代码冲突时，以源码为准。
+- 每篇顶部标注"对应原规范条文"，便于追溯条文依据。
+- 本套文档不加 CI 检查；依赖人工评审与 PR 审查保持同步。
