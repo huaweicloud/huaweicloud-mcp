@@ -145,18 +145,17 @@ addopts = "--cov=src --cov-report=term-missing --cov-fail-under=80"
 - **MINOR**：新增工具 / 新增可选参数
 - **PATCH**：修复、描述优化、依赖升级
 
-版本号唯一事实源是各包 `pyproject.toml`；tag 格式 `mcp-server-huaweicloud-<service>/vx.y.z`（核心包 `huaweicloud-mcp-core/vx.y.z`）。
+版本号唯一事实源是各包 `pyproject.toml`；tag 格式 `mcp_server_<service>/vx.y.z`（核心包 `huaweicloud-mcp-core/vx.y.z`）。
 
-### 双渠道发布
+### 源码发布
 
-1. **PyPI**：`release.yml` 由 tag 触发，uv build + trusted publishing；dist 名 `mcp-server-huaweicloud-<service>`。
-2. **git subdirectory**：始终可安装：
+1.  **git subdirectory**：始终可安装：
    ```json
    {
      "mcpServers": {
        "huaweicloud-vpc": {
          "command": "uvx",
-         "args": ["--from", "git+https://github.com/<org>/huaweicloud-mcp#subdirectory=server/mcp_server_vpc", "mcp-server-huaweicloud-vpc"],
+         "args": ["--from", "git+https://github.com/huaweicloud/huaweicloud-mcp#subdirectory=server/mcp_server_vpc", "mcp_server_vpc"],
          "env": { "HUAWEICLOUD_ACCESS_KEY": "", "HUAWEICLOUD_SECRET_KEY": "", "HUAWEICLOUD_REGION": "" }
        }
      }
@@ -185,13 +184,13 @@ addopts = "--cov=src --cov-report=term-missing --cov-fail-under=80"
 ## 9.9 验证命令速查
 
 ```bash
-cd server/mcp_server_<svc>
+cd server/mcp_server_<service>
 uv sync
 uv run ruff check && uv run ruff format --check    # 风格
 uv run mypy src tests                               # 类型（strict）
 uv run pytest --cov                                 # 测试 + 覆盖率
-uv run mcp-server-huaweicloud-<svc>                # stdio smoke
-uv run mcp-server-huaweicloud-<svc> -t streamable-http   # http smoke
+uv run mcp_server_<service>                # stdio smoke
+uv run mcp_server_<service> -t streamable-http   # http smoke
 ```
 
 返回 [README.md](README.md)。

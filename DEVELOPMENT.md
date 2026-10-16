@@ -26,7 +26,3 @@
 - 文档与代码冲突时，以源码为准。
 - 每篇顶部标注"对应原规范条文"，便于追溯条文依据。
 - 本套文档不加 CI 检查；依赖人工评审与 PR 审查保持同步。
-
-## AI Agent 入口
-
-AI Agent（Cursor / Claude Code / Codex / opencode）请读 [`AGENTS.md`](AGENTS.md)。

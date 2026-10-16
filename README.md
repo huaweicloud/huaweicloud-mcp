@@ -1,6 +1,6 @@
 # huaweicloud-mcp
 
-华为云 MCP Server 共享仓库：为每个华为云服务提供场景化的 MCP 工具，支持本地（stdio）
+华为云 MCP Server 共享仓库：为每个华为云服务提供 MCP 工具，支持本地（stdio）
 与远程（streamable-http）部署。
 
 ## MCP Server 列表
@@ -16,8 +16,7 @@
 
 完整开发指南见 [docs/development/](docs/development/README.md)，按功能特性拆为 10 篇：核心包逐模块 API、
 工具场景化方法论、service/client 层、护栏、输出错误、三层测试、从零建服务实战、
-工程化与发布。参考实现：`server/mcp_server_rfs/`、`server/mcp_server_vpc/`（均含
-完整测试）；脚手架：`docs/development/template/`。
+工程化与发布。参考实现：`server/mcp_server_rfs/`；脚手架：`docs/development/template/`。
 
 ## 核心能力（所有服务共享）
 
@@ -33,7 +32,7 @@
 cd server/mcp_server_rfs
 uv sync
 export HUAWEICLOUD_ACCESS_KEY=... HUAWEICLOUD_SECRET_KEY=... HUAWEICLOUD_REGION=cn-north-4
-uv run mcp-server-huaweicloud-rfs
+uv run mcp_server_rfs
 ```
 
 ## 新服务接入

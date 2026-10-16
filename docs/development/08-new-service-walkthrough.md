@@ -32,7 +32,7 @@ cp -r docs/development/template server/mcp_server_vpc
 
 | PLACEHOLDER | 替换为 |
 |---|---|
-| `mcp-server-huaweicloud-PLACEHOLDER`（dist 名） | `mcp-server-huaweicloud-vpc` |
+| `mcp_server_PLACEHOLDER`（dist 名） | `mcp_server_vpc` |
 | `mcp_server_PLACEHOLDER`（import 名/目录名） | `mcp_server_vpc` |
 | `PLACEHOLDER`（service_name、SDK 包名等） | `vpc` |
 
@@ -40,9 +40,9 @@ cp -r docs/development/template server/mcp_server_vpc
 
 ```toml
 [project]
-name = "mcp-server-huaweicloud-vpc"
+name = "mcp_server_vpc"
 [project.scripts]
-mcp-server-huaweicloud-vpc = "mcp_server_vpc.main:main"
+mcp_server_vpc = "mcp_server_vpc.main:main"
 [tool.hatch.build.targets.wheel]
 packages = ["src/mcp_server_vpc"]
 ```
@@ -266,8 +266,8 @@ uv sync
 uv run ruff check && uv run ruff format --check   # 风格
 uv run mypy                                         # 类型（strict）
 uv run pytest --cov                                 # 测试 + 覆盖率 ≥ 80%
-uv run mcp-server-huaweicloud-vpc                   # stdio smoke
-uv run mcp-server-huaweicloud-vpc -t streamable-http
+uv run mcp_server_vpc                          # stdio smoke
+uv run mcp_server_vpc -t streamable-http       # http smoke
 ```
 
 VPC 当前状态：**ruff✓ / mypy strict✓（0 issues）/ 26 测试✓ / 覆盖率 92%**。

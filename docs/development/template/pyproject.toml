@@ -1,5 +1,5 @@
 [project]
-name = "mcp-server-huaweicloud-PLACEHOLDER"
+name = "mcp_server_PLACEHOLDER"
 version = "0.1.0"
 description = "MCP Server for Huawei Cloud PLACEHOLDER"
 readme = "README.md"
@@ -13,7 +13,7 @@ dependencies = [
 ]
 
 [project.scripts]
-mcp-server-huaweicloud-PLACEHOLDER = "mcp_server_PLACEHOLDER.main:main"
+mcp_server_PLACEHOLDER = "mcp_server_PLACEHOLDER.main:main"
 
 [build-system]
 requires = ["hatchling"]

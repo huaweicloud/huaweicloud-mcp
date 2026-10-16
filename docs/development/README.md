@@ -24,7 +24,7 @@
 
 ## 脚手架
 
-- [`template/`](template) — 可运行最小骨架，`PLACEHOLDER` 待替换。新服务从 `cp -r docs/development/template server/mcp_server_<svc>` 起步。
+- [`template/`](template) — 可运行最小骨架，`PLACEHOLDER` 待替换。新服务从 `cp -r docs/development/template server/mcp_server_<service>` 起步。
 
 ## 新服务开发者最小路径
 
