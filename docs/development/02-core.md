@@ -89,7 +89,7 @@ class McpSettings:
 | 工具运行期（要调云 API） | `require_credentials=True`（默认） | 缺 AK/SK/REGION 直接抛错 |
 | 启动期构建 server、`--help`、跑测试导入 | `require_credentials=False` | 不校验凭证，延迟到真正调用时才校验 |
 
-这个区分保证了 `uv run mcp-server-huaweicloud-rfs --help` 不会因为没配凭证而崩溃，也保证了测试可以 `import` 模块而不触发凭证校验。`build_server()` 内部用的就是 `require_credentials=False`。
+这个区分保证了 `uv run mcp_server_rfs --help` 不会因为没配凭证而崩溃，也保证了测试可以 `import` 模块而不触发凭证校验。`build_server()` 内部用的就是 `require_credentials=False`。
 
 ### 用法
 

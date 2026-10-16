@@ -33,8 +33,8 @@ server/mcp_server_<svc>/     # one package per Huawei Cloud service
 docs/development/template/    # scaffold (see onboarding, §13)
 ```
 
-Naming triplet must agree: dist `mcp-server-huaweicloud-<svc>` / import `mcp_server_<svc>` /
-script `mcp-server-huaweicloud-<svc>`. dist != import, so pyproject MUST declare
+Naming triplet must agree: dist `mcp_server_<svc>` / import `mcp_server_<svc>` /
+script `mcp_server_<svc>`. dist != import, so pyproject MUST declare
 `[tool.hatch.build.targets.wheel] packages = ["src/mcp_server_<svc>"]` (spec §5.1, §16 B.8).
 
 ## The three layers (mandatory, unidirectional tools -> service -> client)
@@ -130,8 +130,8 @@ uv sync
 uv run ruff check && uv run ruff format --check
 uv run mypy
 uv run pytest --cov
-uv run mcp-server-huaweicloud-<svc>            # stdio; smoke with MCP Inspector / Cursor
-uv run mcp-server-huaweicloud-<svc> -t streamable-http
+uv run mcp_server_<svc>            # stdio; smoke with MCP Inspector / Cursor
+uv run mcp_server_<svc> -t streamable-http
 ```
 
 ## Where to look
