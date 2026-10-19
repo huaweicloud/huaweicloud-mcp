@@ -7,10 +7,9 @@ from __future__ import annotations
 
 import json
 from types import SimpleNamespace
-from typing import Any
+from typing import Any, cast
 
 import pytest
-
 from mcp.types import CallToolResult, TextContent
 
 from huaweicloud_mcp_core.errors import McpToolError
@@ -38,21 +37,17 @@ async def delete_widget(widget_id: str, confirm: bool = False) -> dict[str, Any]
 
 
 class SpyAudit(AuditLogger):
-    def __init__(self) -> None:
-        super().__init__()
-        self.events: list[dict[str, Any]] = []
+    """AuditLogger that records events without writing to stderr or a file."""
 
     def emit(self, **event: Any) -> None:
-        if "params" in event:
-            event["params"] = self._masking.mask(event["params"])
-        self.events.append(event)
+        self.events.append(self._build_record(**event))
 
 
-def _ctx(method: str, params: dict[str, Any] | None = None) -> SimpleNamespace:
+def _ctx(method: str, params: dict[str, Any] | None = None) -> Any:
     return SimpleNamespace(method=method, params=params)
 
 
-def _tool_ctx(tool_name: str, arguments: dict[str, Any]) -> SimpleNamespace:
+def _tool_ctx(tool_name: str, arguments: dict[str, Any]) -> Any:
     return _ctx("tools/call", {"name": tool_name, "arguments": arguments})
 
 
@@ -62,12 +57,14 @@ def _ok_result(payload: dict[str, Any]) -> CallToolResult:
 
 def _payload(result: Any) -> dict[str, Any]:
     if isinstance(result, CallToolResult):
-        return json.loads(result.content[0].text)
-    return result
+        first = result.content[0]
+        assert isinstance(first, TextContent)
+        return cast(dict[str, Any], json.loads(first.text))
+    return cast(dict[str, Any], result)
 
 
 def _make_call_next(outcome: Any) -> Any:
-    async def call_next(ctx: SimpleNamespace) -> Any:
+    async def call_next(ctx: Any) -> Any:
         return outcome
 
     return call_next
@@ -81,7 +78,9 @@ async def _run(
 ) -> Any:
     if tool_result is None:
         tool_result = {"ok": True}
-    return await middleware(_tool_ctx(tool_name, arguments), _make_call_next(_ok_result(tool_result)))
+    return await middleware(
+        _tool_ctx(tool_name, arguments), _make_call_next(_ok_result(tool_result))
+    )
 
 
 def _middleware(**kwargs: Any) -> GuardrailsMiddleware:
@@ -93,7 +92,7 @@ def _middleware(**kwargs: Any) -> GuardrailsMiddleware:
 async def test_non_tool_requests_pass_through_untouched() -> None:
     middleware = _middleware()
 
-    async def call_next(ctx: SimpleNamespace) -> Any:
+    async def call_next(ctx: Any) -> Any:
         return {"tools": []}
 
     result = await middleware(_ctx("tools/list"), call_next)
@@ -150,9 +149,7 @@ async def test_confirm_rule_escalates_then_allows_with_confirm_true() -> None:
     assert payload["confirmation_required"] is True
     assert "staging-confirm" in payload["rules_hit"]
     assert middleware._audit.events[-1]["decision"] == "confirm_required"
-    allowed = await _run(
-        middleware, "delete_widget", {"widget_id": "staging-1", "confirm": True}
-    )
+    allowed = await _run(middleware, "delete_widget", {"widget_id": "staging-1", "confirm": True})
     assert _payload(allowed) == {"ok": True}
 
 
@@ -210,9 +207,7 @@ async def test_fail_closed_blocks_write_on_engine_error(
     def boom(*args: Any, **kwargs: Any) -> list[Any]:
         raise RuntimeError("engine exploded")
 
-    monkeypatch.setattr(
-        "huaweicloud_mcp_core.guardrails.middleware.evaluate_rules", boom
-    )
+    monkeypatch.setattr("huaweicloud_mcp_core.guardrails.middleware.evaluate_rules", boom)
     middleware = _middleware()
     blocked = await _run(middleware, "update_widget", {"widget_id": "w-1"})
     payload = _payload(blocked)
@@ -226,9 +221,7 @@ async def test_fail_closed_allows_read_on_engine_error(
     def boom(*args: Any, **kwargs: Any) -> list[Any]:
         raise RuntimeError("engine exploded")
 
-    monkeypatch.setattr(
-        "huaweicloud_mcp_core.guardrails.middleware.evaluate_rules", boom
-    )
+    monkeypatch.setattr("huaweicloud_mcp_core.guardrails.middleware.evaluate_rules", boom)
     middleware = _middleware()
     allowed = await _run(middleware, "list_widgets", {})
     assert _payload(allowed) == {"ok": True}
@@ -238,7 +231,7 @@ async def test_fail_closed_allows_read_on_engine_error(
 async def test_tool_error_from_execution_is_wrapped() -> None:
     middleware = _middleware()
 
-    async def call_next(ctx: SimpleNamespace) -> Any:
+    async def call_next(ctx: Any) -> Any:
         raise McpToolError("MCP_NOT_FOUND", "widget missing", hint="retry")
 
     result = await middleware(_tool_ctx("list_widgets", {}), call_next)
@@ -251,7 +244,7 @@ async def test_dict_result_is_masked_directly() -> None:
     middleware = _middleware()
     outcome = {"secret_key": "abcdef", "value": 1}
 
-    async def call_next(ctx: SimpleNamespace) -> Any:
+    async def call_next(ctx: Any) -> Any:
         return outcome
 
     result = await middleware(_tool_ctx("list_widgets", {}), call_next)
@@ -262,7 +255,7 @@ async def test_dict_result_is_masked_directly() -> None:
 async def test_non_json_tool_result_masked_as_text() -> None:
     middleware = _middleware()
 
-    async def call_next(ctx: SimpleNamespace) -> Any:
+    async def call_next(ctx: Any) -> Any:
         return CallToolResult(
             content=[TextContent(type="text", text="raw token Bearer abc123XYZdef456")]
         )

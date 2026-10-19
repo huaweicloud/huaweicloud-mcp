@@ -6,11 +6,14 @@
 from __future__ import annotations
 
 import json
+from pathlib import Path
+
+import pytest
 
 from huaweicloud_mcp_core.guardrails.audit import AuditLogger
 
 
-def test_emit_writes_jsonl_to_stderr(capsys: object) -> None:
+def test_emit_writes_jsonl_to_stderr(capsys: pytest.CaptureFixture[str]) -> None:
     logger = AuditLogger()
     logger.emit(tool="list_stacks", risk="READ", decision="allowed", params={"a": 1})
     captured = capsys.readouterr()
@@ -24,7 +27,7 @@ def test_emit_writes_jsonl_to_stderr(capsys: object) -> None:
     assert "ts" in record
 
 
-def test_emit_appends_to_file(tmp_path: object) -> None:
+def test_emit_appends_to_file(tmp_path: Path) -> None:
     target = tmp_path / "audit.jsonl"
     logger = AuditLogger(file_path=str(target))
     logger.emit(tool="t1", decision="allowed")
@@ -35,7 +38,7 @@ def test_emit_appends_to_file(tmp_path: object) -> None:
     assert json.loads(lines[1])["tool"] == "t2"
 
 
-def test_emit_masks_and_trims_params(tmp_path: object) -> None:
+def test_emit_masks_and_trims_params(tmp_path: Path) -> None:
     target = tmp_path / "audit.jsonl"
     logger = AuditLogger(file_path=str(target))
     logger.emit(
@@ -47,7 +50,7 @@ def test_emit_masks_and_trims_params(tmp_path: object) -> None:
     assert len(record["params"]["template"]) == 200
 
 
-def test_emit_swallows_file_errors(capsys: object) -> None:
+def test_emit_swallows_file_errors(capsys: pytest.CaptureFixture[str]) -> None:
     logger = AuditLogger(file_path="Z:/no/such/dir/audit.jsonl")
     logger.emit(tool="t", decision="allowed")
     captured = capsys.readouterr()

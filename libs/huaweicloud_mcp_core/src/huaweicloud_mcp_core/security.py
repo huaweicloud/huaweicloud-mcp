@@ -42,7 +42,7 @@ def guard(*, risk: ToolRisk) -> Callable[[F], F]:
                 return exc.to_dict()
 
         _TOOL_RISK_REGISTRY[fn.__name__] = risk
-        setattr(wrapper, "__tool_risk__", risk)
+        wrapper.__tool_risk__ = risk  # type: ignore[attr-defined]
         return wrapper  # type: ignore[return-value]
 
     return decorator
