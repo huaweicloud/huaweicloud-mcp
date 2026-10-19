@@ -108,14 +108,15 @@ huaweicloud-mcp/
 
 | 对象 | 规则 | 示例 |
 |---|---|---|
-| 服务目录 | `mcp_server_<service>`，连字符分隔 | `mcp_server_ecs`、`mcp_server_rds_mysql` |
+| 服务目录 | `mcp_server_<service>`，下划线分隔 | `mcp_server_ecs`、`mcp_server_rds_mysql` |
 | Python 包名（import） | `mcp_server_<service>`，下划线分隔 | `mcp_server_ecs` |
-| 可执行命令 | 与服务目录一致 | `mcp_server_ecs` |
+| PyPI 分发包名（dist name） | `mcp-server-<service>`，中划线分隔 | `mcp-server-ecs` |
+| 可执行命令 | 与 dist name 一致（中划线） | `mcp-server-ecs` |
 | MCP server name | `huaweicloud-<service>` | `MCPServer("huaweicloud-ecs")`（build_server 生成） |
 | 服务名取值 | 与控制台产品名对应，多单词用连字符 | `rds-mysql`、`gaussdb`、`functiongraph` |
 
-**禁止**：同一服务拆成多个包；目录名与 dist 名、import 名不一致。
+**禁止**：同一服务拆成多个包。
 
-> 分发名（`mcp_server_ecs`）与导入名（`mcp_server_ecs`）不一致，hatchling 无法自动定位包——pyproject **必须**显式配置 `[tool.hatch.build.targets.wheel] packages = ["src/mcp_server_ecs"]`。
+> 分发名（`mcp-server-ecs`，中划线）与导入名（`mcp_server_ecs`，下划线）不一致，hatchling 无法自动定位包——pyproject **必须**显式配置 `[tool.hatch.build.targets.wheel] packages = ["src/mcp_server_ecs"]`。
 
 下一站：[02-core.md](02-core.md) 讲核心包。

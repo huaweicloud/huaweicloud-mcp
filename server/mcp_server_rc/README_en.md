@@ -97,8 +97,8 @@ powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | ie
 git clone <repo-url>
 cd huaweicloud-mcp/server/mcp_server_rc
 uv sync
-uv run mcp-huaweicloud-rc          # stdio (default)
-uv run mcp-huaweicloud-rc -t streamable-http
+uv run mcp-server-rc          # stdio (default)
+uv run mcp-server-rc -t streamable-http
 ```
 
 ## Configuration
@@ -156,7 +156,7 @@ rules:
             "args": [
                 "--from",
                 "git+https://github.com/huaweicloud/huaweicloud-mcp#subdirectory=server/mcp_server_rc",
-                "mcp-huaweicloud-rc"
+                "mcp-server-rc"
             ],
             "env": {
                 "HUAWEICLOUD_ACCESS_KEY": "",

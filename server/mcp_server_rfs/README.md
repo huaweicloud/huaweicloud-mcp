@@ -61,8 +61,8 @@ powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | ie
 git clone <仓库地址>
 cd huaweicloud-mcp/server/mcp_server_rfs
 uv sync
-uv run mcp-huaweicloud-rfs          # stdio（默认）
-uv run mcp-huaweicloud-rfs -t streamable-http
+uv run mcp-server-rfs          # stdio（默认）
+uv run mcp-server-rfs -t streamable-http
 ```
 
 ## 配置
@@ -101,7 +101,7 @@ git 仓库版本：
             "args": [
                 "--from",
                 "git+https://github.com/huaweicloud/huaweicloud-mcp#subdirectory=server/mcp_server_rfs",
-                "mcp-huaweicloud-rfs"
+                "mcp-server-rfs"
             ],
             "env": {
                 "HUAWEICLOUD_ACCESS_KEY": "",
