@@ -65,26 +65,25 @@ MCP（Model Context Protocol）是 LLM 与外部工具/数据源通信的协议�
 
 ```
 huaweicloud-mcp/
-├── docs/development/                  # 开发者文档（本目录）+ 脚手架模板 template/
-├── server/                           # 所有服务的 MCP Server
-│   ├── mcp_server_rfs/          # 参考实现（完整测试）
-│   ├── mcp_server_vpc/          # 参考实现（实战篇产物）
+├── docs/development/           # 开发者文档（本目录）+ 脚手架模板 template/
+├── server/                     # 所有服务的 MCP Server
+│   ├── mcp_server_rfs/         # 参考实现（完整测试）
+│   ├── mcp_server_rc/          # 参考实现（实战篇产物）
 │   └── mcp_server_<service>/
-│       ├── pyproject.toml            # 独立可发布包
+│       ├── pyproject.toml      # 独立可发布包
 │       ├── uv.lock
-│       ├── README.md / README_zh.md  # 双语（必需）
+│       ├── README.md / README_en.md   # 双语（必需）
 │       ├── src/mcp_server_<service>/
-│       │   ├── main.py               # 入口
-│       │   ├── server.py             # MCPServer 构建（build_server）
-│       │   ├── tools/                # 第 1 层
-│       │   ├── service/              # 第 2 层
-│       │   └── client/               # 第 3 层
-│       └── tests/                    # 与 src 平级
+│       │   ├── main.py                # 入口
+│       │   ├── server.py              # MCPServer 构建（build_server）
+│       │   ├── tools/                 # 第 1 层
+│       │   ├── service/               # 第 2 层
+│       │   └── client/                # 第 3 层
+│       └── tests/                     # 与 src 平级
 ├── libs/
-│   └── huaweicloud_mcp_core/         # 公共核心包（含 tests、py.typed）
-├── DEVELOPMENT.md                   # 迁移索引页（指向本目录）
-├── DEVELOPMENT_SPEC2.md              # 旧单文件规范（备份，见 docs/development/README.md）
-├── README.md / README_zh.md
+│   └── huaweicloud_mcp_core/             # 公共核心包（含 tests、py.typed）
+├── CONTRIBUTING.md / CONTRIBUTING_en.md  # 迁移索引页（指向本目录）
+├── README.md / README_en.md
 └── LICENSE
 ```
 

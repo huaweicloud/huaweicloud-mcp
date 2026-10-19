@@ -1,6 +1,6 @@
 # 安全策略
 
-> **语言切换：** [English](./SECURITY.en.md) | 中文
+> **语言切换：** [English](./SECURITY_en.md) | 中文
 
 ## 支持版本
 

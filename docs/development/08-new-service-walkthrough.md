@@ -274,7 +274,7 @@ VPC 当前状态：**ruff✓ / mypy strict✓（0 issues）/ 26 测试✓ / 覆�
 
 ## 8.7 第七步：双语 README
 
-补 `README.md`（英文）+ `README_zh.md`（中文），章节顺序固定（见 [09-engineering-release.md §9.4](09-engineering-release.md)）：
+补 `README_zh.md`（中文）+ `README.md`（英文），章节顺序固定（见 [09-engineering-release.md §9.4](09-engineering-release.md)）：
 
 - Version / Overview / Category / Features
 - **Available Tools**（逐个链接华为云官方 API 文档）

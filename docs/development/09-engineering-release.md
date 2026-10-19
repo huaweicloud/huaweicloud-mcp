@@ -71,7 +71,7 @@ addopts = "--cov=src --cov-report=term-missing --cov-fail-under=80"
 
 ## 9.4 文档规范（双语 README 固定章节）
 
-每个服务**必须**提供 `README.md`（英文）+ `README_zh.md`（中文），内容等价，章节顺序固定：
+每个服务**必须**提供 `README.md`（中文）+ `README_en.md`（英文），内容等价，章节顺序固定：
 
 ```markdown
 # <Service> MCP Server
