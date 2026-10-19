@@ -5,6 +5,8 @@
 
 from __future__ import annotations
 
+from pathlib import Path
+
 import pytest
 
 from huaweicloud_mcp_core.errors import McpToolError
@@ -35,7 +37,7 @@ def test_env_lists_generate_block_rules(monkeypatch: pytest.MonkeyPatch) -> None
     assert all(rule.action == "block" for rule in rules)
 
 
-def test_yaml_rules_loaded(tmp_path: object, monkeypatch: pytest.MonkeyPatch) -> None:
+def test_yaml_rules_loaded(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     config = tmp_path / "guardrails.yaml"
     config.write_text(
         """
@@ -67,17 +69,15 @@ rules:
     assert rules[1].action == "confirm"
 
 
-def test_invalid_action_fails_fast(tmp_path: object, monkeypatch: pytest.MonkeyPatch) -> None:
+def test_invalid_action_fails_fast(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     config = tmp_path / "guardrails.yaml"
-    config.write_text(
-        'rules:\n  - id: bad\n    action: explode\n', encoding="utf-8"
-    )
+    config.write_text("rules:\n  - id: bad\n    action: explode\n", encoding="utf-8")
     monkeypatch.setenv("HUAWEICLOUD_MCP_GUARDRAILS_CONFIG", str(config))
     with pytest.raises(McpToolError, match="invalid action"):
         load_rules()
 
 
-def test_duplicate_rule_id_fails_fast(tmp_path: object, monkeypatch: pytest.MonkeyPatch) -> None:
+def test_duplicate_rule_id_fails_fast(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     config = tmp_path / "guardrails.yaml"
     config.write_text(
         "rules:\n  - id: dup\n    action: warn\n  - id: dup\n    action: block\n",
@@ -88,10 +88,14 @@ def test_duplicate_rule_id_fails_fast(tmp_path: object, monkeypatch: pytest.Monk
         load_rules()
 
 
-def test_invalid_regex_fails_fast(tmp_path: object, monkeypatch: pytest.MonkeyPatch) -> None:
+def test_invalid_regex_fails_fast(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     config = tmp_path / "guardrails.yaml"
     config.write_text(
-        'rules:\n  - id: bad-re\n    match:\n      resources:\n        name_patterns: ["[unclosed"]\n',
+        "rules:\n"
+        "  - id: bad-re\n"
+        "    match:\n"
+        "      resources:\n"
+        '        name_patterns: ["[unclosed"]\n',
         encoding="utf-8",
     )
     monkeypatch.setenv("HUAWEICLOUD_MCP_GUARDRAILS_CONFIG", str(config))
@@ -129,9 +133,7 @@ def test_evaluate_skips_non_matching_tool() -> None:
 
 
 def test_evaluate_skips_non_matching_risk() -> None:
-    rules = [
-        _rule("r1", "block", risks=(ToolRisk.DANGEROUS,), resources=ResourceSpec(ids=("x",)))
-    ]
+    rules = [_rule("r1", "block", risks=(ToolRisk.DANGEROUS,), resources=ResourceSpec(ids=("x",)))]
     hits = evaluate_rules(rules, "delete_stack", ToolRisk.WRITE, {"id": "x"})
     assert hits == []
 
@@ -152,8 +154,9 @@ def test_strictest_hit_prefers_block_over_warn() -> None:
         ToolRisk.WRITE,
         {"stack_name": "s-1"},
     )
-    assert strictest_hit(hits) is not None
-    assert strictest_hit(hits).rule.id == "block-rule"
+    strictest = strictest_hit(hits)
+    assert strictest is not None
+    assert strictest.rule.id == "block-rule"
 
 
 def test_strictest_hit_empty() -> None:

@@ -23,9 +23,7 @@ def test_masks_huawei_cloud_sk_in_text() -> None:
 
 def test_masks_pem_private_key_block() -> None:
     engine = MaskingEngine()
-    text = (
-        "-----BEGIN RSA PRIVATE KEY-----\nMIIEow...\n-----END RSA PRIVATE KEY-----"
-    )
+    text = "-----BEGIN RSA PRIVATE KEY-----\nMIIEow...\n-----END RSA PRIVATE KEY-----"
     masked = engine.mask_text(text)
     assert "MIIEow" not in masked
     assert MASK in masked

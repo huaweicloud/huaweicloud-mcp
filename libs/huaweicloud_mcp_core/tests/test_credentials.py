@@ -6,7 +6,7 @@
 from __future__ import annotations
 
 from types import SimpleNamespace
-from typing import Any
+from typing import Any, ClassVar
 
 import pytest
 
@@ -31,9 +31,9 @@ def _settings(**overrides: Any) -> McpSettings:
 
 
 class _FakeIamClient:
-    instances: list[_FakeIamClient] = []
-    projects: list[Any] = []
-    error: Exception | None = None
+    instances: ClassVar[list[_FakeIamClient]] = []
+    projects: ClassVar[list[Any]] = []
+    error: ClassVar[Exception | None] = None
 
     def __init__(self) -> None:
         self.credentials: Any = None
@@ -115,7 +115,5 @@ def test_build_credentials_global_scope_skips_project() -> None:
 
 def test_build_credentials_with_security_token() -> None:
     _FakeIamClient.projects = [SimpleNamespace(id="pid-iam")]
-    credentials = build_credentials(
-        CredentialScope.PROJECT, _settings(security_token="tok-1")
-    )
+    credentials = build_credentials(CredentialScope.PROJECT, _settings(security_token="tok-1"))
     assert credentials.security_token == "tok-1"
