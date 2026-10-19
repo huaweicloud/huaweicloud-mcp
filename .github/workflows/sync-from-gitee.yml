@@ -1,0 +1,46 @@
+name: Sync from Gitee (force push)
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 22 * * *'
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout current repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: master-dev
+
+      - name: Configure git
+        run: |
+          git config user.name  "Huawei Cloud SDK"
+          git config user.email "66664031+Huaweicloud-SDK@users.noreply.github.com"
+
+      - name: Fetch from Gitee
+        env:
+          GITEE_USER:  ${{ secrets.GITEE_USER }}
+          GITEE_TOKEN: ${{ secrets.GITEE_TOKEN }}
+          GITEE_REPO:  ${{ secrets.GITEE_REPO }}
+          GITEE_BRANCH: ${{ vars.GITEE_BRANCH }}
+        run: |
+          set -euo pipefail
+          GITEE_BRANCH="${GITEE_BRANCH:-master}"
+          git remote add gitee "https://${GITEE_USER}:${GITEE_TOKEN}@gitee.com/${GITEE_REPO}.git"
+          git fetch gitee "${GITEE_BRANCH}" --force
+          git remote -v | sed 's#://[^@]*@#://***@#'
+
+      - name: Force push Gitee code to master-dev
+        env:
+          GITEE_BRANCH: ${{ vars.GITEE_BRANCH }}
+        run: |
+          set -euo pipefail
+          GITEE_BRANCH="${GITEE_BRANCH:-master}"
+          git push origin "refs/remotes/gitee/${GITEE_BRANCH}:refs/heads/master-dev" --force
