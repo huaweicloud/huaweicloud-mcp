@@ -1,5 +1,7 @@
 # 为 huaweicloud-mcp 做贡献
 
+> **语言切换：** [English](./CONTRIBUTING_en.md) | 中文
+
 首先，感谢您考虑为 huaweicloud-mcp 做出贡献！🎉
 
 ## 行为准则
