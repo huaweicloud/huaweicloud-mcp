@@ -11,7 +11,7 @@ import pytest
 
 from huaweicloud_mcp_core.config import McpSettings
 from huaweicloud_mcp_core.errors import McpToolError
-from mcp_huaweicloud_rfs.client.rfs_client import RfsClient, sdk_to_dict
+from mcp_server_rfs.client.rfs_client import RfsClient, sdk_to_dict
 
 _SETTINGS = McpSettings(
     access_key="AKTESTKEY000001",

@@ -14,7 +14,7 @@ from huaweicloud_mcp_core.errors import McpToolError
 from huaweicloud_mcp_core.guardrails import assert_not_protected
 from huaweicloud_mcp_core.output import clamp_limit, page_result, single_result
 
-from mcp_huaweicloud_rfs.client.rfs_client import RfsClient
+from mcp_server_rfs.client.rfs_client import RfsClient
 
 _IN_PROGRESS = {
     "CREATION_IN_PROGRESS",
