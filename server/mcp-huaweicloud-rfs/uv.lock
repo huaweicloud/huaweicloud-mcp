@@ -645,7 +645,7 @@ dev = [
 
 [[package]]
 name = "huaweicloudsdkcore"
-version = "3.1.215"
+version = "3.1.205"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "certifi" },
@@ -658,29 +658,29 @@ dependencies = [
     { name = "six" },
 ]
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/22/96/bbb00007bdd2bba5e41ff2cfbe570c5dd7aa538a2c820bb72a297b3edfe8/huaweicloudsdkcore-3.1.215-py3-none-any.whl", hash = "sha256:d8808607fdd92cb70b53b5414b630e8600de9ca4c41b2606d21cfa3a721d1348", size = 71462, upload-time = "2026-09-17T08:28:53.876Z" },
+    { url = "https://files.pythonhosted.org/packages/39/4d/c9f22135a4f42ee058c0ab2c53f679bee23932e176f1c1db9a3497ef8316/huaweicloudsdkcore-3.1.205-py3-none-any.whl", hash = "sha256:a78fef2ddc450ad847a402b4498f785f4405e37877bf899150301bca04ec1a2a", size = 69577, upload-time = "2026-07-14T08:09:38.668Z" },
 ]
 
 [[package]]
 name = "huaweicloudsdkiam"
-version = "3.1.215"
+version = "3.1.205"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "huaweicloudsdkcore" },
 ]
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/29/8b/0e119612a3f7716794ae41f17d1811142a5b28bbfe7a21fb3ee7474e824e/huaweicloudsdkiam-3.1.215-py3-none-any.whl", hash = "sha256:3e74b4f5971b9400b2fae922c84deb66bf717ecefb8c837cc7a477c4b8bb6ceb", size = 1269045, upload-time = "2026-09-17T08:30:13.636Z" },
+    { url = "https://files.pythonhosted.org/packages/93/61/af32d79f78b13e8a7ccde0626f2e53c5e5dcaba494a1351451bb125aedd1/huaweicloudsdkiam-3.1.205-py3-none-any.whl", hash = "sha256:e45b0599b09ae6ec7733b58c078f907e4b5522d6cc5e81e67023e3d61b603cf7", size = 1251349, upload-time = "2026-07-14T08:10:39.917Z" },
 ]
 
 [[package]]
 name = "huaweicloudsdkrfs"
-version = "3.1.215"
+version = "3.1.205"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "huaweicloudsdkcore" },
 ]
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/75/12/2f01adfd3bc4d5e365f1691bd63e3bad65f9e39f3024d75d4c2ad1a8eef9/huaweicloudsdkrfs-3.1.215-py3-none-any.whl", hash = "sha256:9b64a8fbaf9a8772bedc7eb51584701326cb3b7e778eaf9c641645f99e761452", size = 635148, upload-time = "2026-09-17T08:31:34.698Z" },
+    { url = "https://files.pythonhosted.org/packages/6d/18/f7df200b024e20e0d257c2f96c3676148b7f16901dedeef405f96a948676/huaweicloudsdkrfs-3.1.205-py3-none-any.whl", hash = "sha256:4c0425f21dafcbbe3d733f89fc544b2a88af825d236d4526df1818a40dddfe4e", size = 635149, upload-time = "2026-07-14T08:11:39.444Z" },
 ]
 
 [[package]]
@@ -832,11 +832,11 @@ wheels = [
 
 [[package]]
 name = "pyasn1"
-version = "0.6.3"
+version = "0.6.4"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/5c/5f/6583902b6f79b399c9c40674ac384fd9cd77805f9e6205075f828ef11fb2/pyasn1-0.6.3.tar.gz", hash = "sha256:697a8ecd6d98891189184ca1fa05d1bb00e2f84b5977c481452050549c8a72cf", size = 148685, upload-time = "2026-03-17T01:06:53.382Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/a4/9a/23310166d960def5897e91fe20e5b724601b02a22e84ba1f94232c0b7f67/pyasn1-0.6.4.tar.gz", hash = "sha256:9c447d8431c947fe4c8febc4ed9e760bc29011a5b01e5c74b67025bd9fb8ce81", size = 151262, upload-time = "2026-07-09T01:12:33.988Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/5d/a0/7d793dce3fa811fe047d6ae2431c672364b462850c6235ae306c0efd025f/pyasn1-0.6.3-py3-none-any.whl", hash = "sha256:a80184d120f0864a52a073acc6fc642847d0be408e7c7252f31390c0f4eadcde", size = 83997, upload-time = "2026-03-17T01:06:52.036Z" },
+    { url = "https://files.pythonhosted.org/packages/9a/3b/6163796d69c3977d1e4287bea4a6979161cbbdd170ebb430511e8e1999ce/pyasn1-0.6.4-py3-none-any.whl", hash = "sha256:deda9277cfd454080ec40b207fb6df82206a3a2688735233cdcd8d3d565f088b", size = 84410, upload-time = "2026-07-09T01:12:32.92Z" },
 ]
 
 [[package]]
