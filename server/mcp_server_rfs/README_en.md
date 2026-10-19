@@ -1,5 +1,7 @@
 # RFS MCP Server
 
+> **Language:** English | [中文](./README.md)
+
 ## Version
 
 0.1.0

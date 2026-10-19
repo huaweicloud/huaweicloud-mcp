@@ -1,8 +1,9 @@
 # huaweicloud-mcp
 
-> **Language:** [English](./README_en.md) | 中文
+> **语言切换：** [English](./README_en.md) | 中文
 
-华为云 MCP Server 共享仓库：为每个华为云服务提供 MCP 工具，支持本地（stdio）与远程（streamable-http）部署。
+华为云 MCP Server 共享仓库：为每个华为云服务提供场景化的 MCP 工具，支持本地（stdio）
+与远程（streamable-http）部署。
 
 ## MCP Server 列表
 

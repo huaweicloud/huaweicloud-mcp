@@ -1,5 +1,7 @@
 # RC MCP Server（资源中心）
 
+> **语言切换：** [English](./README_en.md) | 中文
+
 ## 版本
 
 0.1.0
