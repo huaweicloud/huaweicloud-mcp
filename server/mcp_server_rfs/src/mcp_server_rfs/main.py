@@ -3,7 +3,7 @@
 
 """Huawei Cloud RFS MCP Server entrypoint."""
 
-from mcp_huaweicloud_rfs.server import mcp
+from mcp_server_rfs.server import mcp
 from huaweicloud_mcp_core.server import run_standard
 
 
