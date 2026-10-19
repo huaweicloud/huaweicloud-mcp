@@ -6,8 +6,11 @@
 from __future__ import annotations
 
 import asyncio
-from typing import Any
+from typing import Any, cast
 
+from huaweicloud_mcp_core.config import McpSettings
+from huaweicloud_mcp_core.credentials import CredentialScope, build_credentials
+from huaweicloud_mcp_core.errors import wrap_sdk_error
 from huaweicloudsdkcore.exceptions.exceptions import ServiceResponseException
 from huaweicloudsdkrfs.v1 import RfsClient as _SdkRfsClient
 from huaweicloudsdkrfs.v1.model.create_execution_plan_request import CreateExecutionPlanRequest
@@ -33,10 +36,6 @@ from huaweicloudsdkrfs.v1.model.list_stack_resources_request import ListStackRes
 from huaweicloudsdkrfs.v1.model.list_stacks_request import ListStacksRequest
 from huaweicloudsdkrfs.v1.model.vars_structure import VarsStructure
 from huaweicloudsdkrfs.v1.region.rfs_region import RfsRegion
-
-from huaweicloud_mcp_core.config import McpSettings
-from huaweicloud_mcp_core.credentials import CredentialScope, build_credentials
-from huaweicloud_mcp_core.errors import wrap_sdk_error
 
 _SKIP_ATTRS = {"local_vars_configuration", "discriminator", "swagger_types"}
 
@@ -86,7 +85,7 @@ class RfsClient:
     async def list_stacks(self, *, limit: int, marker: str | None) -> dict[str, Any]:
         def _call() -> dict[str, Any]:
             request = ListStacksRequest(limit=limit, marker=marker)
-            return sdk_to_dict(self._client.list_stacks(request))
+            return cast(dict[str, Any], sdk_to_dict(self._client.list_stacks(request)))
 
         return await asyncio.to_thread(_call)
 
@@ -99,7 +98,7 @@ class RfsClient:
                 if exc.status_code == 404:
                     return None
                 raise wrap_sdk_error(exc) from exc
-            return sdk_to_dict(response)
+            return cast(dict[str, Any], sdk_to_dict(response))
 
         return await asyncio.to_thread(_call)
 
@@ -123,7 +122,7 @@ class RfsClient:
                 description=description,
             )
             request = CreateStackRequest(body=body)
-            return sdk_to_dict(self._client.create_stack(request))
+            return cast(dict[str, Any], sdk_to_dict(self._client.create_stack(request)))
 
         return await asyncio.to_thread(_call)
 
@@ -142,7 +141,7 @@ class RfsClient:
                 vars_structure=_vars_structure(variables),
             )
             request = DeployStackRequest(stack_name=stack_name, body=body)
-            return sdk_to_dict(self._client.deploy_stack(request))
+            return cast(dict[str, Any], sdk_to_dict(self._client.deploy_stack(request)))
 
         return await asyncio.to_thread(_call)
 
@@ -150,7 +149,7 @@ class RfsClient:
         def _call() -> dict[str, Any]:
             body = DeleteStackEnhancedRequestBody(retain_all_resources=retain_all_resources)
             request = DeleteStackEnhancedRequest(stack_name=stack_name, body=body)
-            return sdk_to_dict(self._client.delete_stack_enhanced(request))
+            return cast(dict[str, Any], sdk_to_dict(self._client.delete_stack_enhanced(request)))
 
         return await asyncio.to_thread(_call)
 
@@ -163,21 +162,21 @@ class RfsClient:
     ) -> dict[str, Any]:
         def _call() -> dict[str, Any]:
             request = ListStackEventsRequest(stack_name=stack_name, limit=limit, marker=marker)
-            return sdk_to_dict(self._client.list_stack_events(request))
+            return cast(dict[str, Any], sdk_to_dict(self._client.list_stack_events(request)))
 
         return await asyncio.to_thread(_call)
 
     async def list_stack_resources(self, *, stack_name: str) -> dict[str, Any]:
         def _call() -> dict[str, Any]:
             request = ListStackResourcesRequest(stack_name=stack_name)
-            return sdk_to_dict(self._client.list_stack_resources(request))
+            return cast(dict[str, Any], sdk_to_dict(self._client.list_stack_resources(request)))
 
         return await asyncio.to_thread(_call)
 
     async def list_stack_outputs(self, *, stack_name: str) -> dict[str, Any]:
         def _call() -> dict[str, Any]:
             request = ListStackOutputsRequest(stack_name=stack_name)
-            return sdk_to_dict(self._client.list_stack_outputs(request))
+            return cast(dict[str, Any], sdk_to_dict(self._client.list_stack_outputs(request)))
 
         return await asyncio.to_thread(_call)
 
@@ -196,7 +195,7 @@ class RfsClient:
                 vars_structure=_vars_structure(variables),
             )
             request = CreateExecutionPlanRequest(stack_name=stack_name, body=body)
-            return sdk_to_dict(self._client.create_execution_plan(request))
+            return cast(dict[str, Any], sdk_to_dict(self._client.create_execution_plan(request)))
 
         return await asyncio.to_thread(_call)
 
@@ -211,7 +210,9 @@ class RfsClient:
                 stack_name=stack_name,
                 execution_plan_id=execution_plan_id,
             )
-            return sdk_to_dict(self._client.get_execution_plan_metadata(request))
+            return cast(
+                dict[str, Any], sdk_to_dict(self._client.get_execution_plan_metadata(request))
+            )
 
         return await asyncio.to_thread(_call)
 
@@ -226,6 +227,6 @@ class RfsClient:
                 stack_name=stack_name,
                 execution_plan_id=execution_plan_id,
             )
-            return sdk_to_dict(self._client.get_execution_plan(request))
+            return cast(dict[str, Any], sdk_to_dict(self._client.get_execution_plan(request)))
 
         return await asyncio.to_thread(_call)

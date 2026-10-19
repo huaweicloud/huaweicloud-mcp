@@ -8,9 +8,9 @@ from __future__ import annotations
 from typing import Any
 
 import pytest
-
 from huaweicloud_mcp_core.config import McpSettings
 from huaweicloud_mcp_core.errors import McpToolError
+
 from mcp_server_rfs.client.rfs_client import RfsClient, sdk_to_dict
 
 _SETTINGS = McpSettings(
@@ -112,9 +112,7 @@ async def test_deploy_stack_request() -> None:
 
 async def test_get_execution_plan_metadata_request() -> None:
     sdk = RecordingSdkClient()
-    await _client(sdk).get_execution_plan_metadata(
-        stack_name="web", execution_plan_id="plan-1"
-    )
+    await _client(sdk).get_execution_plan_metadata(stack_name="web", execution_plan_id="plan-1")
     _, request = sdk.requests[0]
     assert request.stack_name == "web"
     assert request.execution_plan_id == "plan-1"

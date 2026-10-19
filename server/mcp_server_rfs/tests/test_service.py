@@ -5,22 +5,21 @@
 
 from __future__ import annotations
 
-from typing import Any
-
 import pytest
-
 from huaweicloud_mcp_core.errors import McpToolError
-from mcp_server_rfs.service.stack_service import StackService
 
 from conftest import FakeRfsClient, register_stack
+from mcp_server_rfs.service.stack_service import StackService
 
 
 @pytest.fixture
 def service(fake_client: FakeRfsClient) -> StackService:
-    return StackService(client=fake_client)
+    return StackService(client=fake_client)  # type: ignore[arg-type]  # fake injection for tests
 
 
-async def test_list_stacks_paginates_and_filters(service: StackService, fake_client: FakeRfsClient) -> None:
+async def test_list_stacks_paginates_and_filters(
+    service: StackService, fake_client: FakeRfsClient
+) -> None:
     register_stack(fake_client, "web-prod")
     register_stack(fake_client, "web-dev")
     register_stack(fake_client, "db-prod")
@@ -31,7 +30,9 @@ async def test_list_stacks_paginates_and_filters(service: StackService, fake_cli
     assert result["marker"] == "marker-2"
 
 
-async def test_list_stacks_limit_is_clamped(service: StackService, fake_client: FakeRfsClient) -> None:
+async def test_list_stacks_limit_is_clamped(
+    service: StackService, fake_client: FakeRfsClient
+) -> None:
     register_stack(fake_client, "s1")
     result = await service.list_stacks(limit=5000)
     assert fake_client.calls[-1][1]["limit"] == 100
@@ -56,22 +57,26 @@ async def test_get_stack_missing_raises(service: StackService) -> None:
     assert "list_stacks" in (excinfo.value.hint or "")
 
 
-async def test_deploy_creates_when_absent(service: StackService, fake_client: FakeRfsClient) -> None:
+async def test_deploy_creates_when_absent(
+    service: StackService, fake_client: FakeRfsClient
+) -> None:
     result = await service.deploy_stack(
         stack_name="fresh",
-        template="resource \"huaweicloud_vpc\" \"main\" {}",
+        template='resource "huaweicloud_vpc" "main" {}',
         variables={"env": "dev"},
     )
     assert result["action"] == "created"
     assert fake_client.calls[-1][0] == "create_stack"
     call = fake_client.calls[-1][1]
-    assert call["template_body"] == "resource \"huaweicloud_vpc\" \"main\" {}"
+    assert call["template_body"] == 'resource "huaweicloud_vpc" "main" {}'
     assert call["variables"] == {"env": "dev"}
     assert call["enable_deletion_protection"] is False
     assert "Track progress" in result["hints"][0]
 
 
-async def test_deploy_updates_when_exists(service: StackService, fake_client: FakeRfsClient) -> None:
+async def test_deploy_updates_when_exists(
+    service: StackService, fake_client: FakeRfsClient
+) -> None:
     register_stack(fake_client, "web", status="DEPLOYMENT_COMPLETE")
     result = await service.deploy_stack(
         stack_name="web",
@@ -83,7 +88,9 @@ async def test_deploy_updates_when_exists(service: StackService, fake_client: Fa
     assert fake_client.calls[-1][1]["template_uri"] == "https://obs.example.com/tpl"
 
 
-async def test_deploy_rejects_while_in_progress(service: StackService, fake_client: FakeRfsClient) -> None:
+async def test_deploy_rejects_while_in_progress(
+    service: StackService, fake_client: FakeRfsClient
+) -> None:
     register_stack(fake_client, "web", status="DEPLOYMENT_IN_PROGRESS")
     with pytest.raises(McpToolError) as excinfo:
         await service.deploy_stack(stack_name="web", template="t")
@@ -148,7 +155,11 @@ async def test_preview_returns_diff_summary(
         "execution_plan_items": [
             {"action": "ADD", "resource_name": "vpc", "resource_type": "huaweicloud_vpc"},
             {"action": "ADD", "resource_name": "subnet", "resource_type": "huaweicloud_vpc_subnet"},
-            {"action": "REMOVE", "resource_name": "old_eip", "resource_type": "huaweicloud_vpc_eip"},
+            {
+                "action": "REMOVE",
+                "resource_name": "old_eip",
+                "resource_type": "huaweicloud_vpc_eip",
+            },
         ],
     }
     result = await service.preview_stack_changes(stack_name="web", template="t")
@@ -183,17 +194,33 @@ async def test_preview_timeout_raises(
     assert excinfo.value.code == "MCP_TIMEOUT"
 
 
-async def test_diagnose_aggregates_failures(service: StackService, fake_client: FakeRfsClient) -> None:
+async def test_diagnose_aggregates_failures(
+    service: StackService, fake_client: FakeRfsClient
+) -> None:
     register_stack(fake_client, "web", status="DEPLOYMENT_FAILED", status_message="deploy failed")
     fake_client.events["web"] = [
-        {"event_time": "t2", "resource_name": "eip", "resource_type": "huaweicloud_vpc_eip",
-         "status": "CREATE_FAILED", "status_reason": "quota exceeded"},
-        {"event_time": "t1", "resource_name": "vpc", "resource_type": "huaweicloud_vpc",
-         "status": "CREATE_COMPLETE", "status_reason": None},
+        {
+            "event_time": "t2",
+            "resource_name": "eip",
+            "resource_type": "huaweicloud_vpc_eip",
+            "status": "CREATE_FAILED",
+            "status_reason": "quota exceeded",
+        },
+        {
+            "event_time": "t1",
+            "resource_name": "vpc",
+            "resource_type": "huaweicloud_vpc",
+            "status": "CREATE_COMPLETE",
+            "status_reason": None,
+        },
     ]
     fake_client.resources["web"] = [
-        {"resource_name": "eip", "resource_type": "huaweicloud_vpc_eip",
-         "status": "CREATE_FAILED", "status_message": "quota exceeded"},
+        {
+            "resource_name": "eip",
+            "resource_type": "huaweicloud_vpc_eip",
+            "status": "CREATE_FAILED",
+            "status_message": "quota exceeded",
+        },
     ]
     result = await service.diagnose_stack(stack_name="web")
     assert result["stack"]["status"] == "DEPLOYMENT_FAILED"

@@ -118,7 +118,10 @@ class FakeRfsClient:
 
     async def delete_stack(self, *, stack_name: str, retain_all_resources: bool) -> dict[str, Any]:
         self.calls.append(
-            ("delete_stack", {"stack_name": stack_name, "retain_all_resources": retain_all_resources})
+            (
+                "delete_stack",
+                {"stack_name": stack_name, "retain_all_resources": retain_all_resources},
+            )
         )
         self.stacks.pop(stack_name, None)
         return {}
@@ -177,11 +180,20 @@ class FakeRfsClient:
             plan["status"] = self.plan_status_queue.pop(0)
         return dict(plan)
 
-    async def get_execution_plan(self, *, stack_name: str, execution_plan_id: str) -> dict[str, Any]:
+    async def get_execution_plan(
+        self, *, stack_name: str, execution_plan_id: str
+    ) -> dict[str, Any]:
         self.calls.append(
-            ("get_execution_plan", {"stack_name": stack_name, "execution_plan_id": execution_plan_id})
+            (
+                "get_execution_plan",
+                {"stack_name": stack_name, "execution_plan_id": execution_plan_id},
+            )
         )
-        return {"execution_plan_items": list(self.plans.get(execution_plan_id, {}).get("execution_plan_items", []))}
+        return {
+            "execution_plan_items": list(
+                self.plans.get(execution_plan_id, {}).get("execution_plan_items", [])
+            )
+        }
 
 
 @pytest.fixture

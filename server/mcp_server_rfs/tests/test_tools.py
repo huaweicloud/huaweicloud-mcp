@@ -8,7 +8,6 @@ from __future__ import annotations
 from typing import Any
 
 import pytest
-
 from huaweicloud_mcp_core.security import ToolRisk, get_tool_risk, tool_supports_confirm
 
 import mcp_server_rfs.server  # noqa: F401  (import registers all tools)
@@ -154,9 +153,7 @@ async def test_delete_tool_passes_confirm(stub_service: StubService) -> None:
     from mcp_server_rfs.tools.stack import delete_stack
 
     await delete_stack(stack_name="web", retain_resources=True, confirm=True)
-    assert stub_service.calls == [
-        {"stack_name": "web", "retain_resources": True, "confirm": True}
-    ]
+    assert stub_service.calls == [{"stack_name": "web", "retain_resources": True, "confirm": True}]
 
 
 async def test_diagnose_tool_passes_event_limit(stub_service: StubService) -> None:
