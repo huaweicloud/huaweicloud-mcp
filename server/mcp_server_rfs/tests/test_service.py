@@ -10,7 +10,7 @@ from typing import Any
 import pytest
 
 from huaweicloud_mcp_core.errors import McpToolError
-from mcp_huaweicloud_rfs.service.stack_service import StackService
+from mcp_server_rfs.service.stack_service import StackService
 
 from conftest import FakeRfsClient, register_stack
 
@@ -108,7 +108,7 @@ async def test_deploy_wait_polls_until_complete(
     fake_client: FakeRfsClient,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.setattr("mcp_huaweicloud_rfs.service.stack_service._POLL_INTERVAL_SECONDS", 0)
+    monkeypatch.setattr("mcp_server_rfs.service.stack_service._POLL_INTERVAL_SECONDS", 0)
     register_stack(fake_client, "web", status="DEPLOYMENT_IN_PROGRESS")
     fake_client.status_queue = ["DEPLOYMENT_COMPLETE"]
     fake_client.outputs["web"] = [{"output_key": "eip", "output_value": "1.1.1.1"}]
@@ -125,7 +125,7 @@ async def test_deploy_wait_timeout_returns_current_status(
     fake_client: FakeRfsClient,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.setattr("mcp_huaweicloud_rfs.service.stack_service._POLL_INTERVAL_SECONDS", 0)
+    monkeypatch.setattr("mcp_server_rfs.service.stack_service._POLL_INTERVAL_SECONDS", 0)
     register_stack(fake_client, "web", status="DEPLOYMENT_COMPLETE")
     fake_client.status_queue = ["DEPLOYMENT_COMPLETE", "DEPLOYMENT_IN_PROGRESS"]
     result = await service.deploy_stack(
@@ -139,7 +139,7 @@ async def test_preview_returns_diff_summary(
     fake_client: FakeRfsClient,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.setattr("mcp_huaweicloud_rfs.service.stack_service._POLL_INTERVAL_SECONDS", 0)
+    monkeypatch.setattr("mcp_server_rfs.service.stack_service._POLL_INTERVAL_SECONDS", 0)
     register_stack(fake_client, "web")
     fake_client.plan_status_queue = ["AVAILABLE"]
     fake_client.plans["plan-1"] = {
@@ -163,7 +163,7 @@ async def test_preview_failed_plan_raises(
     fake_client: FakeRfsClient,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.setattr("mcp_huaweicloud_rfs.service.stack_service._POLL_INTERVAL_SECONDS", 0)
+    monkeypatch.setattr("mcp_server_rfs.service.stack_service._POLL_INTERVAL_SECONDS", 0)
     register_stack(fake_client, "web")
     fake_client.plan_status_queue = ["CREATION_FAILED"]
     with pytest.raises(McpToolError) as excinfo:
@@ -176,7 +176,7 @@ async def test_preview_timeout_raises(
     fake_client: FakeRfsClient,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.setattr("mcp_huaweicloud_rfs.service.stack_service._POLL_INTERVAL_SECONDS", 0)
+    monkeypatch.setattr("mcp_server_rfs.service.stack_service._POLL_INTERVAL_SECONDS", 0)
     register_stack(fake_client, "web")
     with pytest.raises(McpToolError) as excinfo:
         await service.preview_stack_changes(stack_name="web", template="t", timeout_seconds=0)

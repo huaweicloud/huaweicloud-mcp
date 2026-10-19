@@ -9,8 +9,8 @@ from typing import Any
 
 from huaweicloud_mcp_core.security import ToolRisk, guard
 
-from mcp_huaweicloud_rfs.server import mcp
-from mcp_huaweicloud_rfs.service.stack_service import StackService
+from mcp_server_rfs.server import mcp
+from mcp_server_rfs.service.stack_service import StackService
 
 
 @mcp.tool()
