@@ -1,78 +1,79 @@
-# RC MCP Server
+# RC MCP Server（资源中心）
 
-## Version
+> **语言切换：** [English](./README_en.md) | 中文
+
+## 版本
 
 0.1.0
 
-## Overview
+## 概述
 
-MCP Server for Huawei Cloud RC (Resource Center), providing global resource
-management. Users can search their cloud resources, view resource details and
-the relationships between resources, and organize resources into groups. It
-also supports custom advanced queries to check the configuration state of
-resources under specified conditions via ResourceQL.
+华为云资源中心（Resource Center，简称 RC）MCP Server，为用户提供全局
+资源管理能力。用户可以通过 RC 检索自己在云平台上的资源，查看资源详情、
+资源之间的关系，还可以对资源进行分组管理。同时支持自定义高级查询，通过
+使用 ResourceQL 查询特定条件下的资源配置状态。
 
-## Category
+## 分类
 
-Management & Governance / Resource Center
+管理与治理 / 资源中心
 
-## Features
+## 功能
 
-**Resource Query**
+**资源查询（Resource Query）**
 
-- List all resources with filters (resource name, resource ID, tags,
-  enterprise project, region, resource type)
-- Show a single resource's detail by resource ID
-- List the cloud services, resources, and regions supported by RC
+- 查看所有资源列表，支持按资源名称、资源 ID、标签、企业项目、区域、
+  资源类型等条件筛选
+- 指定资源 ID，返回该资源的详细信息
+- 列举 RC 支持的云服务、资源和区域列表
 
-**Resource Relationships**
+**资源关系（Resource Relationships）**
 
-- Show the relations between a resource and other resources by resource ID
+- 指定资源 ID，查询该资源与其他资源的关联关系
 
-**Resource Groups**
+**资源分组（Resource Groups）**
 
-- Create, update, delete, show, and list resource groups
-- Add resources to a group in batch and remove a resource from a group
+- 创建、修改、删除、查询、列举资源分组
+- 向分组批量添加资源、从分组移除资源
 
-**Advanced Queries**
+**高级查询（Advanced Queries）**
 
-- Run ResourceQL advanced queries
-- Create, list, show, update, and delete advanced queries
+- 运行高级查询（ResourceQL）
+- 高级查询（存储查询）的增、删、改、查
 
-**General**
+**通用能力**
 
-- Structured JSON output with pagination and field whitelisting
-- AK/SK authentication via environment variables (shared core package)
-- Security guardrails auto-installed (risk declaration, output masking, audit)
+- 结构化 JSON 输出，支持分页和字段白名单裁剪
+- 通过环境变量进行 AK/SK 鉴权（使用共享核心包）
+- 安全护栏自动开启（风险声明、输出脱敏、结构化审计）
 
-## Available Tools
+## 工具清单
 
-| Tool | Scenario | Risk | API |
+| 工具 | 场景 | 风险级别 | API |
 |---|---|---|---|
-| `list_providers` | List all cloud service providers | READ | `GET /v1/resource-center/all-providers` |
-| `list_all_resources` | List all resources with filters | READ | `GET /v1/resource-center/all-resources` |
-| `show_resource_detail` | Show a single resource by ID | READ | `GET /v1/resource-center/all-resources/{resource_id}` |
-| `list_all_tags` | List all resource tags | READ | `GET /v1/resource-center/all-resources/tags` |
-| `count_all_resources` | Count resources by filters | READ | `GET /v1/resource-center/all-resources/count` |
-| `collect_resources_summary` | Per-provider/type/region summary | READ | `GET /v1/resource-center/all-resources/summary` |
-| `create_resource_group` | Create a resource group | WRITE | `POST /v1/resource-center/groups` |
-| `update_resource_group` | Update a resource group description | WRITE | `PATCH /v1/resource-center/groups/{group_id}` |
-| `delete_resource_group` | Delete a resource group (confirm) | DANGEROUS | `DELETE /v1/resource-center/groups/{group_id}` |
-| `show_resource_group` | Show a resource group | READ | `GET /v1/resource-center/groups/{group_id}` |
-| `list_resource_groups` | List resource groups | READ | `GET /v1/resource-center/groups` |
-| `add_resources_to_group` | Add resources to a group | WRITE | `PUT /v1/resource-center/groups/{group_id}/resources` |
-| `remove_resource_from_group` | Remove a resource from a group | WRITE | `DELETE /v1/resource-center/groups/{group_id}/resources/{resource_id}` |
-| `show_resource_relations` | Show a resource's relations | READ | `GET /v1/resource-center/resource-relations` |
-| `run_query` | Execute an advanced query | READ | `POST /v1/resource-center/run-query` |
-| `create_stored_query` | Create an advanced query | WRITE | `POST /v1/resource-center/stored-queries` |
-| `list_stored_queries` | List advanced queries | READ | `GET /v1/resource-center/stored-queries` |
-| `show_stored_query` | Show an advanced query | READ | `GET /v1/resource-center/stored-queries/{query_id}` |
-| `update_stored_query` | Update an advanced query | WRITE | `PUT /v1/resource-center/stored-queries/{query_id}` |
-| `delete_stored_query` | Delete an advanced query (confirm) | DANGEROUS | `DELETE /v1/resource-center/stored-queries/{query_id}` |
+| `list_providers` | 列出所有云服务提供商 | READ | `GET /v1/resource-center/all-providers` |
+| `list_all_resources` | 按条件列出所有资源 | READ | `GET /v1/resource-center/all-resources` |
+| `show_resource_detail` | 按 ID 查询单个资源详情 | READ | `GET /v1/resource-center/all-resources/{resource_id}` |
+| `list_all_tags` | 列出所有资源标签 | READ | `GET /v1/resource-center/all-resources/tags` |
+| `count_all_resources` | 按条件统计资源数量 | READ | `GET /v1/resource-center/all-resources/count` |
+| `collect_resources_summary` | 按服务/类型/区域汇总资源 | READ | `GET /v1/resource-center/all-resources/summary` |
+| `create_resource_group` | 创建资源分组 | WRITE | `POST /v1/resource-center/groups` |
+| `update_resource_group` | 修改资源分组描述 | WRITE | `PATCH /v1/resource-center/groups/{group_id}` |
+| `delete_resource_group` | 删除资源分组（需确认） | DANGEROUS | `DELETE /v1/resource-center/groups/{group_id}` |
+| `show_resource_group` | 查询单个资源分组 | READ | `GET /v1/resource-center/groups/{group_id}` |
+| `list_resource_groups` | 查询资源分组列表 | READ | `GET /v1/resource-center/groups` |
+| `add_resources_to_group` | 向资源分组添加资源 | WRITE | `PUT /v1/resource-center/groups/{group_id}/resources` |
+| `remove_resource_from_group` | 从资源分组移除资源 | WRITE | `DELETE /v1/resource-center/groups/{group_id}/resources/{resource_id}` |
+| `show_resource_relations` | 查询资源关联关系 | READ | `GET /v1/resource-center/resource-relations` |
+| `run_query` | 执行高级查询 | READ | `POST /v1/resource-center/run-query` |
+| `create_stored_query` | 创建高级查询 | WRITE | `POST /v1/resource-center/stored-queries` |
+| `list_stored_queries` | 列举高级查询 | READ | `GET /v1/resource-center/stored-queries` |
+| `show_stored_query` | 查询高级查询详情 | READ | `GET /v1/resource-center/stored-queries/{query_id}` |
+| `update_stored_query` | 更新高级查询 | WRITE | `PUT /v1/resource-center/stored-queries/{query_id}` |
+| `delete_stored_query` | 删除高级查询（需确认） | DANGEROUS | `DELETE /v1/resource-center/stored-queries/{query_id}` |
 
-## Usage Guide
+## 使用指引
 
-### Prerequisites
+### 前置条件
 
 - Python 3.10+
 - UV
@@ -89,47 +90,44 @@ curl -LsSf https://astral.sh/uv/install.sh | sh
 powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
 ```
 
-### Installation
+### 安装
 
 ```bash
-git clone <repo-url>
+git clone <仓库地址>
 cd huaweicloud-mcp/server/mcp_server_rc
 uv sync
-uv run mcp-huaweicloud-rc          # stdio (default)
+uv run mcp-huaweicloud-rc          # stdio（默认）
 uv run mcp-huaweicloud-rc -t streamable-http
 ```
 
-## Configuration
+## 配置
 
-### Environment Variables
+### 环境变量
 
-| Variable | Required | Description | Default |
+| 变量 | 必填 | 说明 | 默认值 |
 |---|---|---|---|
-| `HUAWEICLOUD_ACCESS_KEY` | Yes | Account access key (AK) | - |
-| `HUAWEICLOUD_SECRET_KEY` | Yes | Account secret key (SK) | - |
-| `HUAWEICLOUD_PROJECT_ID` | No | Override project_id (auto-resolved via IAM by default) | auto |
-| `HUAWEICLOUD_SECURITY_TOKEN` | No | STS temporary credential token | - |
-| `HUAWEICLOUD_MCP_READ_ONLY` | No | `true` blocks all WRITE/DANGEROUS tools | `false` |
-| `HUAWEICLOUD_MCP_PROTECTED_IDS` | No | Guardrail: protected resource IDs (CSV, block) | empty |
-| `HUAWEICLOUD_MCP_PROTECTED_NAMES` | No | Guardrail: protected resource names (CSV, block) | empty |
-| `HUAWEICLOUD_MCP_PROTECTED_TAGS` | No | Guardrail: protected tags (CSV `k` or `k=v`, block) | empty |
-| `HUAWEICLOUD_MCP_GUARDRAILS_CONFIG` | No | Path to `guardrails.yaml` for complex rules | empty |
-| `HUAWEICLOUD_MCP_AUDIT_FILE` | No | JSONL audit file path (audit always on, stderr) | empty |
-| `MCP_SERVER_PORT` | No | streamable-http port | `8000` |
-| `MCP_SERVER_HOST` | No | streamable-http bind address | `0.0.0.0` |
+| `HUAWEICLOUD_ACCESS_KEY` | 是 | 账号 AK | - |
+| `HUAWEICLOUD_SECRET_KEY` | 是 | 账号 SK | - |
+| `HUAWEICLOUD_PROJECT_ID` | 否 | 手动覆盖 project_id（默认经 IAM 自动解析） | 自动解析 |
+| `HUAWEICLOUD_SECURITY_TOKEN` | 否 | STS 临时凭证 token | - |
+| `HUAWEICLOUD_MCP_READ_ONLY` | 否 | `true` 拦截所有 WRITE/DANGEROUS 工具 | `false` |
+| `HUAWEICLOUD_MCP_PROTECTED_IDS` | 否 | 护栏：受保护资源 ID（逗号分隔，命中即 block） | 空 |
+| `HUAWEICLOUD_MCP_PROTECTED_NAMES` | 否 | 护栏：受保护资源名称（逗号分隔，命中即 block） | 空 |
+| `HUAWEICLOUD_MCP_PROTECTED_TAGS` | 否 | 护栏：受保护标签（逗号分隔 `k` 或 `k=v`） | 空 |
+| `HUAWEICLOUD_MCP_GUARDRAILS_CONFIG` | 否 | 复杂规则文件 `guardrails.yaml` 路径 | 空 |
+| `HUAWEICLOUD_MCP_AUDIT_FILE` | 否 | 审计 JSONL 文件路径（审计始终开启，默认写 stderr） | 空 |
+| `MCP_SERVER_PORT` | 否 | streamable-http 端口 | `8000` |
+| `MCP_SERVER_HOST` | 否 | streamable-http 绑定地址 | `0.0.0.0` |
 
-### Protection-list caveat
+### 保护名单盲区声明
 
-The guardrail protection list matches at the **parameter level**. A resource
-that carries a protection tag in the cloud but whose tag is not present in the
-call arguments cannot be caught by the middleware first line — the DANGEROUS
-tools therefore call `assert_not_protected` with the RC cloud-side real
-attributes (id/name) as a second defense line. Note that resource groups and
-advanced queries have **no tag dimension**: tag-based protection rules never
-match them, so protect them by ID or name. Configure protection proactively
-via the env vars or `guardrails.yaml`.
+护栏保护名单为**参数级匹配**。云上打了保护标签、但本次调用参数中未出现
+该标签的资源，参数级匹配无法命中——因此 DANGEROUS 工具在执行不可逆操作前
+调用 `assert_not_protected`，用 RC 云上真实属性（id/name）做第二道防线。
+注意：资源分组与高级查询**无标签维度**，基于标签的保护规则对其不生效，
+请使用 ID/名称保护。建议通过环境变量或 `guardrails.yaml` 主动配置保护名单。
 
-Example `guardrails.yaml`:
+`guardrails.yaml` 示例：
 
 ```yaml
 version: 1
@@ -141,10 +139,10 @@ rules:
       resources:
         name_patterns: ["^prod-"]
     action: block
-    message: Production RC resources are protected. Contact the ops team.
+    message: 生产 RC 受保护，请联系运维。
 ```
 
-### Run with uvx (from git)
+### uvx 运行（git 仓库版本）
 
 ```json
 {
@@ -165,25 +163,24 @@ rules:
 }
 ```
 
-## Examples
+## 示例
 
 ### Cursor / Claude Desktop / Trae
 
-Add the JSON snippet above to your MCP client configuration, fill in the
-credentials, then ask naturally:
+将上述 JSON 配置填入 MCP 客户端并填入凭证，然后自然语言使用：
 
-- "List all resources" → `list_all_resources()`
-- "Show the detail of resource your_resource_id" → `show_resource_detail(resource_id="your_resource_id")`
-- "Query resources in region cn-north-4 of type ecs.cloudservers" → `list_all_resources(region_id="cn-north-4", resource_type="ecs.cloudservers")`
-- "Which cloud services can be queried" → `list_providers()`
-- "What tags do my resources have" → `list_all_tags()`
-- "Create a resource group named prod" → `create_resource_group(group_name="prod")`
-- "Add your_resource_id to the prod group" → `add_resources_to_group(group_id="<group_id>", resource_ids=["your_resource_id"])`
-- "Delete the prod resource group" → `delete_resource_group(group_id="<group_id>")` (returns a preview first; call again with `confirm=true` to execute)
-- "Which resources is your_resource_id related to" → `show_resource_relations(resource_id="your_resource_id")`
-- "Run an advanced query: SELECT * FROM resources WHERE provider = 'ecs'" → `run_query(expression="SELECT * FROM resources WHERE provider = 'ecs'")`
-- "Create an advanced query named my-ecs with expression SELECT * FROM resources WHERE provider = 'ecs'" → `create_stored_query(name="my-ecs", expression="SELECT * FROM resources WHERE provider = 'ecs'")`
+- "列出所有资源" → `list_all_resources()`
+- "查资源 your_resource_id 的详细信息" → `show_resource_detail(resource_id="your_resource_id")`
+- "查询 region_id：cn-north-4，资源类型：ecs.cloudservers 的资源" → `list_all_resources(region_id="cn-north-4", resource_type="ecs.cloudservers")`
+- "有哪些云服务可以查询" → `list_providers()`
+- "我的资源有哪些标签" → `list_all_tags()`
+- "创建一个叫 prod 的资源组" → `create_resource_group(group_name="prod")`
+- "把 your_resource_id 加入 prod 组" → `add_resources_to_group(group_id="<group_id>", resource_ids=["your_resource_id"])`
+- "删除 prod 资源组" → `delete_resource_group(group_id="<group_id>")`（先返回预览，确认后 `confirm=true`，执行）
+- "资源 your_resource_id 都关联了哪些资源" → `show_resource_relations(resource_id="your_resource_id")`
+- "运行高级查询，ResourceQL：SELECT * FROM resources WHERE provider = 'ecs'" → `run_query(expression="SELECT * FROM resources WHERE provider = 'ecs'")`
+- "创建一个高级查询，名称：my-ecs，表达式：SELECT * FROM resources WHERE provider = 'ecs'" → `create_stored_query(name="my-ecs", expression="SELECT * FROM resources WHERE provider = 'ecs'")`
 
-## License
+## 许可证
 
 MIT
