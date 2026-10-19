@@ -11,10 +11,10 @@ from huaweicloud_mcp_core.guardrails.rules import Rule, RuleHit, load_rules
 
 __all__ = [
     "AuditLogger",
-    "MaskingEngine",
     "GuardrailsMiddleware",
-    "assert_not_protected",
+    "MaskingEngine",
     "Rule",
     "RuleHit",
+    "assert_not_protected",
     "load_rules",
 ]

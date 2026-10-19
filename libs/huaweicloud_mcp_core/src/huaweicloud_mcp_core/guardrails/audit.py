@@ -17,11 +17,7 @@ _MAX_PARAM_LENGTH = 200
 
 def _trim_params(params: Any) -> Any:
     if isinstance(params, dict):
-        return {
-            str(key): _trim_params(value)
-            for key, value in params.items()
-            if value is not None
-        }
+        return {str(key): _trim_params(value) for key, value in params.items() if value is not None}
     if isinstance(params, (list, tuple)):
         return [_trim_params(item) for item in params]
     if isinstance(params, str) and len(params) > _MAX_PARAM_LENGTH:
@@ -39,12 +35,13 @@ class AuditLogger:
     ) -> None:
         self._file_path = file_path
         self._masking = masking or MaskingEngine()
+        self.events: list[dict[str, Any]] = []
 
     @property
     def file_path(self) -> str | None:
         return self._file_path
 
-    def emit(self, **event: Any) -> None:
+    def _build_record(self, **event: Any) -> dict[str, Any]:
         record: dict[str, Any] = {
             "ts": _utc_timestamp(),
             "event": "tool_call",
@@ -52,6 +49,11 @@ class AuditLogger:
         record.update(event)
         if "params" in record:
             record["params"] = self._masking.mask(_trim_params(record["params"]))
+        return record
+
+    def emit(self, **event: Any) -> None:
+        record = self._build_record(**event)
+        self.events.append(record)
         line = json.dumps(record, ensure_ascii=False, default=str)
         print(line, file=sys.stderr)
         if self._file_path:
