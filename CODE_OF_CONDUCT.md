@@ -1,6 +1,6 @@
 # 贡献者公约行为准则
 
-> **语言切换：** [English](./CODE_OF_CONDUCT.en.md) | 中文
+> **语言切换：** [English](./CODE_OF_CONDUCT_en.md) | 中文
 
 ## 我们的承诺
 
