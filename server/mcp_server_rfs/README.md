@@ -1,5 +1,7 @@
 # RFS MCP Server（资源编排服务）
 
+> **语言切换：** [English](./README_en.md) | 中文
+
 ## 版本
 
 0.1.0
