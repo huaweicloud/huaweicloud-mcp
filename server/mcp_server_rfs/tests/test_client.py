@@ -74,6 +74,7 @@ async def test_list_stacks_request() -> None:
     assert method == "list_stacks"
     assert request.limit == 20
     assert request.marker == "m-1"
+    assert request.client_request_id  # RFS APIGW requires the Client-Request-Id header
 
 
 async def test_create_stack_converts_variables() -> None:
@@ -194,3 +195,81 @@ def test_sdk_to_dict_passthrough_scalars() -> None:
     assert sdk_to_dict(5) == 5
     assert sdk_to_dict(True) is True
     assert sdk_to_dict({"a": [1, 2]}) == {"a": [1, 2]}
+
+
+def test_sdk_to_dict_handles_real_sdk_response_with_raw_content() -> None:
+    """Every SDK response inherits SdkResponse, which sets `_raw_content` (bytes).
+
+    Previously `sdk_to_dict` called vars() on that bytes value and raised
+    `TypeError: vars() argument must have __dict__ attribute`. This must not
+    regress once a call finally returns real data.
+    """
+    pytest.importorskip("huaweicloudsdkrfs")
+    from huaweicloudsdkrfs.v1.model.list_stacks_response import ListStacksResponse
+    from huaweicloudsdkrfs.v1.model.stack import Stack
+
+    resp = ListStacksResponse(
+        stacks=[Stack(stack_name="web", stack_id="id-1", status="CREATION_COMPLETE")]
+    )
+    resp.status_code = 200
+    resp.raw_content = b'{"stacks":[]}'  # exactly what SdkResponse stores
+
+    out = sdk_to_dict(resp)
+
+    # Transport-layer fields must NOT leak into tool output.
+    assert "raw_content" not in out
+    assert "status_code" not in out
+    # Logical response fields are preserved.
+    assert out["stacks"][0]["stack_name"] == "web"
+    assert out["stacks"][0]["stack_id"] == "id-1"
+    assert out["stacks"][0]["status"] == "CREATION_COMPLETE"
+
+
+def test_sdk_to_dict_coerces_non_dict_objects_instead_of_crashing() -> None:
+    """Objects without __dict__ (bytes, datetime, Decimal, ...) must not crash."""
+    import datetime
+    from decimal import Decimal
+
+    # bytes (this is what _raw_content holds) -> coerced, not TypeError.
+    assert isinstance(sdk_to_dict(b"raw"), str)
+    assert isinstance(sdk_to_dict(datetime.datetime(2026, 1, 1)), str)
+    assert isinstance(sdk_to_dict(Decimal("1.5")), str)
+
+
+async def test_every_request_carries_client_request_id() -> None:
+    """RFS APIGW rejects requests without the Client-Request-Id header (APIGW.0106)."""
+    sdk = RecordingSdkClient()
+    client = _client(sdk)
+
+    await client.list_stacks(limit=10, marker=None)
+    await client.get_stack_metadata("web")
+    await client.create_stack(
+        stack_name="web",
+        template_body="tpl",
+        template_uri=None,
+        variables=None,
+        enable_deletion_protection=False,
+    )
+    await client.deploy_stack(
+        stack_name="web", template_body="tpl", template_uri=None, variables=None
+    )
+    await client.delete_stack(stack_name="web", retain_all_resources=False)
+    await client.list_stack_events(stack_name="web", limit=5)
+    await client.list_stack_resources(stack_name="web")
+    await client.list_stack_outputs(stack_name="web")
+    await client.create_execution_plan(
+        stack_name="web", template_body="tpl", template_uri=None, variables=None
+    )
+    await client.get_execution_plan_metadata(stack_name="web", execution_plan_id="plan-1")
+    await client.get_execution_plan(stack_name="web", execution_plan_id="plan-1")
+
+    assert len(sdk.requests) == 11
+    for method, request in sdk.requests:
+        rid = getattr(request, "client_request_id", None)
+        assert isinstance(rid, str) and rid, (
+            f"{method} request missing client_request_id (RFS APIGW requires it)"
+        )
+        # RFS APIGW enforces 36-char dashed UUID form (RF.10011006 rejects the 32-char hex form).
+        assert len(rid) == 36 and rid.count("-") == 4, (
+            f"{method} client_request_id must be a 36-char UUID, got {rid!r}"
+        )

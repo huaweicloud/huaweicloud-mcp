@@ -16,6 +16,12 @@ dependencies = [
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
+# Force pyasn1 >= 0.6.4 to fix 3 DoS CVEs (CVE-2026-59884/59885/59886).
+# huaweicloudsdkcore<=3.1.218 pins pyasn1<=0.6.3 in its own requires_dist, so we
+# must override that upper bound here until the SDK ships a relaxed constraint.
+[tool.uv]
+override-dependencies = ["pyasn1>=0.6.4"]
+
 [tool.hatch.build.targets.wheel]
 packages = ["src/huaweicloud_mcp_core"]
 

@@ -60,7 +60,7 @@ powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | ie
 ### Installation
 
 ```bash
-git clone <repo-url>
+git clone https://github.com/huaweicloud/huaweicloud-mcp.git
 cd huaweicloud-mcp/server/mcp_server_rfs
 uv sync
 uv run mcp-huaweicloud-rfs          # stdio (default)
