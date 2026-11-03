@@ -28,7 +28,7 @@ The complete development guide is available at [docs/development/](docs/developm
 cd server/mcp_server_rfs
 uv sync
 export HUAWEICLOUD_ACCESS_KEY=... HUAWEICLOUD_SECRET_KEY=... HUAWEICLOUD_REGION=cn-north-4
-uv run mcp_server_rfs
+uv run mcp-server-rfs
 ```
 
 ## New Service Onboarding
