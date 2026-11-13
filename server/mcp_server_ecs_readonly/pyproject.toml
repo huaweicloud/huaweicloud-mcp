@@ -1,5 +1,5 @@
 [project]
-name = "mcp-server-ecs"
+name = "mcp-server-ecs-readonly"
 version = "0.1.0"
 description = "MCP Server for Huawei Cloud ecs"
 readme = "README.md"
@@ -14,7 +14,7 @@ dependencies = [
 ]
 
 [project.scripts]
-mcp-server-ecs = "mcp_server_ecs.main:main"
+mcp-server-ecs-readonly = "mcp_server_ecs_readonly.main:main"
 
 [build-system]
 requires = ["hatchling"]
@@ -26,7 +26,7 @@ build-backend = "hatchling.build"
 override-dependencies = ["pyasn1>=0.6.4"]
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/mcp_server_ecs"]
+packages = ["src/mcp_server_ecs_readonly"]
 
 [tool.uv.sources]
 huaweicloud-mcp-core = { path = "../../libs/huaweicloud_mcp_core" }

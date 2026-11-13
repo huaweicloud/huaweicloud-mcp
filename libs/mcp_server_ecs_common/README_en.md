@@ -3,7 +3,7 @@
 > **Language:** English | [中文](./README.md)
 
 Shared utilities for the Huawei Cloud ECS MCP server family. This package
-serves the **ecs** (`mcp_server_ecs`) and **ecs-lifecycle**
+serves the **ecs-readonly** (`mcp_server_ecs_readonly`) and **ecs-lifecycle**
 (`mcp_server_ecs_lifecycle`) server packages so that the two do not duplicate
 SDK-response conversion and pagination logic.
 
@@ -18,7 +18,7 @@ SDK-response conversion and pagination logic.
 
 ## Development
 
-This package is a local path dependency of `mcp-server-ecs` and
+This package is a local path dependency of `mcp-server-ecs-readonly` and
 `mcp-server-ecs-lifecycle`. It has no runtime dependencies beyond the standard
 library.
 

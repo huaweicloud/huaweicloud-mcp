@@ -7,4 +7,4 @@ from huaweicloud_mcp_core.server import build_server
 
 mcp = build_server("ecs")
 
-from mcp_server_ecs.tools import ecs  # noqa: E402,F401
+from mcp_server_ecs_readonly.tools import ecs  # noqa: E402,F401

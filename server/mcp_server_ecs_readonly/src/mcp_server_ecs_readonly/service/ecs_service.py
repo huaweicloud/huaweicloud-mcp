@@ -10,7 +10,7 @@ from typing import Any
 
 from huaweicloud_mcp_core.output import clamp_limit, page_result
 
-from mcp_server_ecs.client.ecs_client import EcsClient
+from mcp_server_ecs_readonly.client.ecs_client import EcsClient
 
 _SERVER_FIELDS = (
     "id",

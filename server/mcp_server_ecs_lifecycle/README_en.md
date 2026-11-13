@@ -98,7 +98,7 @@ uv run mcp-server-ecs-lifecycle -t streamable-http
 | `HUAWEICLOUD_ACCESS_KEY` | Yes | Account access key | - |
 | `HUAWEICLOUD_SECRET_KEY` | Yes | Account secret key | - |
 | `HUAWEICLOUD_REGION` | Yes | Resource region (e.g. `cn-north-4`) | - |
-| `HUAWEICLOUD_PROJECT_ID` | No | Override project_id (auto-resolved via IAM by default) | auto |
+| `HUAWEICLOUD_PROJECT_ID` | Yes | ID of the project hosting your resources (console: My Credentials > Project List, e.g. `0610f92e7d124d4a9e4d8e8d95b4a4d0`) | - |
 | `HUAWEICLOUD_ENDPOINT` | No | Override the ECS endpoint; IMS/VPC endpoints are derived from it (the `ecs.` host label is swapped for `ims.`/`vpc.`, gateway hosts are shared, and regions missing from the SDK map are synthesized as `https://ecs.<region>.myhuaweicloud.com`) | auto |
 | `HUAWEICLOUD_SECURITY_TOKEN` | No | STS temporary credential token | - |
 | `HUAWEICLOUD_MCP_READ_ONLY` | No | `true` blocks all WRITE/DANGEROUS tools | `false` |

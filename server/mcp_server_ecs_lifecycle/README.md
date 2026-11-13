@@ -90,7 +90,7 @@ uv run mcp-server-ecs-lifecycle -t streamable-http
 | `HUAWEICLOUD_ACCESS_KEY` | 是 | 账号 AK | - |
 | `HUAWEICLOUD_SECRET_KEY` | 是 | 账号 SK | - |
 | `HUAWEICLOUD_REGION` | 是 | 资源所在区域（如 `cn-north-4`） | - |
-| `HUAWEICLOUD_PROJECT_ID` | 否 | 手动覆盖 project_id（默认经 IAM 自动解析） | 自动解析 |
+| `HUAWEICLOUD_PROJECT_ID` | 是 | 资源所在项目的 project_id（控制台：我的凭证 > 项目列表，形如 `0610f92e7d124d4a9e4d8e8d95b4a4d0`） | - |
 | `HUAWEICLOUD_ENDPOINT` | 否 | 覆盖 ECS 接入点；IMS/VPC 接入点自动派生（`ecs.` 首标签替换为 `ims.`/`vpc.`、网关型 host 全服务复用，SDK region 表之外的区域按 `https://ecs.<region>.myhuaweicloud.com` 合成） | 自动派生 |
 | `HUAWEICLOUD_SECURITY_TOKEN` | 否 | STS 临时凭证 token | - |
 | `HUAWEICLOUD_MCP_READ_ONLY` | 否 | `true` 拦截所有 WRITE/DANGEROUS 工具 | `false` |

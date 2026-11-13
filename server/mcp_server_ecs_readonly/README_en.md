@@ -1,4 +1,4 @@
-# ECS MCP Server
+# ECS Readonly MCP Server
 
 > **Language:** English | [中文](./README.md)
 
@@ -8,7 +8,7 @@
 
 ## Overview
 
-MCP Server for Huawei Cloud ECS (Elastic Cloud Server). It lets MCP clients audit
+Read-only MCP Server for Huawei Cloud ECS (Elastic Cloud Server). It lets MCP clients audit
 cloud server usage through scenario tools: count instances, break down power
 states, inventory flavors, sum up active vCPU/memory, and review public/private
 IP usage — designed for periodic fleet reviews by AI agents.
@@ -60,10 +60,10 @@ powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | ie
 
 ```bash
 git clone <repo-url>
-cd huaweicloud-mcp/server/mcp_server_ecs
+cd huaweicloud-mcp/server/mcp_server_ecs_readonly
 uv sync
-uv run mcp-server-ecs          # stdio (default)
-uv run mcp-server-ecs -t streamable-http
+uv run mcp-server-ecs-readonly          # stdio (default)
+uv run mcp-server-ecs-readonly -t streamable-http
 ```
 
 ## Configuration
@@ -75,7 +75,7 @@ uv run mcp-server-ecs -t streamable-http
 | `HUAWEICLOUD_ACCESS_KEY` | Yes | Account access key | - |
 | `HUAWEICLOUD_SECRET_KEY` | Yes | Account secret key | - |
 | `HUAWEICLOUD_REGION` | Yes | Resource region (e.g. `cn-north-4`) | - |
-| `HUAWEICLOUD_PROJECT_ID` | No | Override project_id (auto-resolved via IAM by default) | auto |
+| `HUAWEICLOUD_PROJECT_ID` | Yes | ID of the project hosting your resources (console: My Credentials > Project List, e.g. `0610f92e7d124d4a9e4d8e8d95b4a4d0`) | - |
 | `HUAWEICLOUD_ENDPOINT` | No | Override the ECS endpoint (regions missing from the SDK map are synthesized as `https://ecs.<region>.myhuaweicloud.com` automatically) | auto |
 | `HUAWEICLOUD_SECURITY_TOKEN` | No | STS temporary credential token | - |
 | `HUAWEICLOUD_MCP_READ_ONLY` | No | `true` blocks all WRITE/DANGEROUS tools | `false` |
@@ -102,7 +102,7 @@ From PyPI:
     "mcpServers": {
         "huaweicloud-ecs": {
             "command": "uvx",
-            "args": ["mcp-server-ecs"],
+            "args": ["mcp-server-ecs-readonly"],
             "env": {
                 "HUAWEICLOUD_ACCESS_KEY": "",
                 "HUAWEICLOUD_SECRET_KEY": "",
@@ -122,8 +122,8 @@ From the git repository:
             "command": "uvx",
             "args": [
                 "--from",
-                "git+https://github.com/<org>/huaweicloud-mcp#subdirectory=server/mcp_server_ecs",
-                "mcp-server-ecs"
+                "git+https://github.com/<org>/huaweicloud-mcp#subdirectory=server/mcp_server_ecs_readonly",
+                "mcp-server-ecs-readonly"
             ],
             "env": {
                 "HUAWEICLOUD_ACCESS_KEY": "",

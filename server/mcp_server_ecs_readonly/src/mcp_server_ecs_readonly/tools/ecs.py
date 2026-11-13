@@ -9,8 +9,8 @@ from typing import Any
 
 from huaweicloud_mcp_core.security import ToolRisk, guard
 
-from mcp_server_ecs.server import mcp
-from mcp_server_ecs.service.ecs_service import EcsService
+from mcp_server_ecs_readonly.server import mcp
+from mcp_server_ecs_readonly.service.ecs_service import EcsService
 
 
 @mcp.tool()

@@ -268,6 +268,164 @@ def _seed_subnets(fake_client: FakeLifecycleClient) -> None:
     ]
 
 
+async def test_default_reasons_explain_every_inferred_value(
+    fake_client: FakeLifecycleClient, service: EcsLifecycleService
+) -> None:
+    _seed_subnets(fake_client)
+
+    result = await service.create_server(
+        name="web", flavor_ref="c7.large.2", image_ref="img-1", admin_pass="Secret123!"
+    )
+
+    reasons = result["preview"]["default_reasons"]
+    # Every inferred field is explained, and the subnet note states the pick is
+    # arbitrary rather than a recommendation.
+    assert set(reasons) == {"vpc_id", "subnet_id", "root_volume_type"}
+    assert "alphabetically" in reasons["subnet_id"]
+    assert "not a recommendation" in reasons["subnet_id"]
+    assert "2 usable subnet(s)" in reasons["subnet_id"]
+    assert reasons["root_volume_type"] == "fixed default SSD"
+
+
+async def test_default_reasons_omit_caller_supplied_values(
+    fake_client: FakeLifecycleClient, service: EcsLifecycleService
+) -> None:
+    _seed_subnets(fake_client)
+
+    result = await service.create_server(
+        name="web",
+        flavor_ref="c7.large.2",
+        image_ref="img-1",
+        vpc_id="vpc-b",
+        subnet_id="subnet-b",
+        root_volume_type="GPSSD",
+        admin_pass="Secret123!",
+    )
+
+    # Nothing was inferred, so there is nothing to explain.
+    assert result["preview"]["defaults_applied"] == []
+    assert result["preview"]["default_reasons"] == {}
+
+
+async def test_default_reasons_cover_on_demand_preview(
+    fake_client: FakeLifecycleClient, service: EcsLifecycleService
+) -> None:
+    _seed_subnets(fake_client)
+
+    result = await service.create_on_demand_server(
+        name="web", flavor_ref="c7.large.2", image_ref="img-1", key_name="kp-1"
+    )
+
+    reasons = result["preview"]["default_reasons"]
+    assert set(reasons) == {"vpc_id", "subnet_id", "root_volume_type"}
+
+
+async def test_default_subnet_honours_explicit_vpc(
+    fake_client: FakeLifecycleClient, service: EcsLifecycleService
+) -> None:
+    _seed_subnets(fake_client)
+
+    result = await service.create_server(
+        name="web",
+        flavor_ref="c7.large.2",
+        image_ref="img-1",
+        vpc_id="vpc-b",
+        admin_pass="Secret123!",
+    )
+
+    # "alpha" sorts before "zeta", but the caller pinned vpc-b, so the only
+    # subnet in that VPC must win instead of the alphabetically first one.
+    preview = result["preview"]
+    assert preview["subnet_id"] == "subnet-b"
+    assert preview["vpc_id"] == "vpc-b"
+    assert preview["defaults_applied"] == ["subnet_id", "root_volume_type"]
+
+
+async def test_default_subnet_explicit_vpc_without_subnets_raises(
+    fake_client: FakeLifecycleClient, service: EcsLifecycleService
+) -> None:
+    _seed_subnets(fake_client)
+
+    with pytest.raises(McpToolError) as excinfo:
+        await service.create_server(
+            name="web",
+            flavor_ref="c7.large.2",
+            image_ref="img-1",
+            vpc_id="vpc-empty",
+            admin_pass="Secret123!",
+        )
+
+    assert excinfo.value.code == "MCP_NOT_FOUND"
+    assert "vpc-empty" in excinfo.value.message
+
+
+async def test_default_subnet_skips_entry_missing_name_and_vpc(
+    fake_client: FakeLifecycleClient, service: EcsLifecycleService
+) -> None:
+    _seed_subnets(fake_client)
+    # A catalog entry with a null name sorts first on a name comparison
+    # ("<anything>" > "") and carries no VPC link.
+    fake_client.subnets.append({"id": "subnet-dirty", "name": None, "vpc_id": None})
+
+    result = await service.create_server(
+        name="web", flavor_ref="c7.large.2", image_ref="img-1", admin_pass="Secret123!"
+    )
+
+    assert result["preview"]["subnet_id"] == "subnet-a"
+    assert result["preview"]["vpc_id"] == "vpc-a"
+
+
+async def test_default_subnet_skips_entry_missing_id(
+    fake_client: FakeLifecycleClient, service: EcsLifecycleService
+) -> None:
+    _seed_subnets(fake_client)
+    fake_client.subnets.append({"id": None, "name": "aaa_x", "vpc_id": "vpc-x"})
+
+    result = await service.create_server(
+        name="web", flavor_ref="c7.large.2", image_ref="img-1", admin_pass="Secret123!"
+    )
+
+    assert result["preview"]["subnet_id"] == "subnet-a"
+    assert result["preview"]["vpc_id"] == "vpc-a"
+
+
+async def test_default_subnet_raises_when_every_entry_is_unusable(
+    fake_client: FakeLifecycleClient, service: EcsLifecycleService
+) -> None:
+    fake_client.subnets = [
+        {"id": "subnet-dirty", "name": None, "vpc_id": None},
+        {"id": None, "name": "aaa_x", "vpc_id": "vpc-x"},
+    ]
+
+    with pytest.raises(McpToolError) as excinfo:
+        await service.create_server(
+            name="web", flavor_ref="c7.large.2", image_ref="img-1", admin_pass="Secret123!"
+        )
+
+    assert excinfo.value.code == "MCP_NOT_FOUND"
+    assert "usable subnet" in excinfo.value.message
+
+
+async def test_explicit_subnet_without_vpc_link_reports_catalog_gap(
+    fake_client: FakeLifecycleClient, service: EcsLifecycleService
+) -> None:
+    fake_client.subnets = [{"id": "subnet-dirty", "name": "alpha", "vpc_id": None}]
+
+    with pytest.raises(McpToolError) as excinfo:
+        await service.create_server(
+            name="web",
+            flavor_ref="c7.large.2",
+            image_ref="img-1",
+            subnet_id="subnet-dirty",
+            admin_pass="Secret123!",
+        )
+
+    # The subnet was found; the message must point at the missing VPC link
+    # instead of claiming the id does not exist.
+    assert excinfo.value.code == "MCP_NOT_FOUND"
+    assert "no VPC link" in excinfo.value.message
+
+
 async def test_create_server_preview_resolves_smart_defaults(
     fake_client: FakeLifecycleClient, service: EcsLifecycleService
 ) -> None:

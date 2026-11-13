@@ -8,7 +8,7 @@ from __future__ import annotations
 import pytest
 
 from conftest import FakeEcsClient, register_server
-from mcp_server_ecs.service.ecs_service import EcsService
+from mcp_server_ecs_readonly.service.ecs_service import EcsService
 
 
 @pytest.fixture

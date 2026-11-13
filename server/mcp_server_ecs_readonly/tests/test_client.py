@@ -11,7 +11,7 @@ import pytest
 from huaweicloud_mcp_core.config import McpSettings
 from huaweicloud_mcp_core.errors import McpToolError
 
-from mcp_server_ecs.client.ecs_client import EcsClient
+from mcp_server_ecs_readonly.client.ecs_client import EcsClient
 
 _SETTINGS = McpSettings(
     access_key="AKTESTKEY000001",

@@ -987,7 +987,7 @@ wheels = [
 ]
 
 [[package]]
-name = "mcp-server-ecs"
+name = "mcp-server-ecs-readonly"
 version = "0.1.0"
 source = { editable = "." }
 dependencies = [

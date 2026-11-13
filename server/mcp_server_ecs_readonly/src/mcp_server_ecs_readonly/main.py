@@ -5,7 +5,7 @@
 
 from huaweicloud_mcp_core.server import run_standard
 
-from mcp_server_ecs.server import mcp
+from mcp_server_ecs_readonly.server import mcp
 
 
 def main() -> None:

@@ -16,10 +16,10 @@
 
 ### 计算
 
-- **[ECS MCP](server/mcp_server_ecs)**：弹性云服务器——实例数量 / 开关机状态 / 规格用量 /
+- **[ECS Readonly MCP](server/mcp_server_ecs_readonly)**：弹性云服务器只读——实例数量 / 开关机状态 / 规格用量 /
   运行中 vCPU 与内存 / 公网私网 IP 的只读盘点，面向周期性资源审计场景。
 - **[ECS Lifecycle MCP](server/mcp_server_ecs_lifecycle)**：弹性云服务器生命周期——
-  创建（包周期/按需，智能默认 + user_data/EIP 槽位）、修改、删除、详情 / 列表 /
+  创建（包周期/按需，智能默认 + user_data/EIP）、修改、删除、详情 / 列表 /
   异步任务查询、镜像 / 规格 / 密钥对推导查询。所有变更工具强制两段式确认
   （先预览，`confirm=true` 才执行），执行前再过一遍保护规则——agent 绝不自作主张。
 

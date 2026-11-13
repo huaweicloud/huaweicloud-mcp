@@ -3,7 +3,7 @@
 
 """Traffic protection for ECS SDK calls: bounded concurrency + retry with backoff.
 
-Both ECS MCP servers (``mcp_server_ecs`` and ``mcp_server_ecs_lifecycle``) share
+Both ECS MCP servers (``mcp_server_ecs_readonly`` and ``mcp_server_ecs_lifecycle``) share
 one AK/SK (one Huawei Cloud user), so they share one APIG per-user rate-limit
 budget. Two failure modes would otherwise overrun that budget:
 

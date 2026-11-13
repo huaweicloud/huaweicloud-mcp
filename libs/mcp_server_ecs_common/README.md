@@ -2,7 +2,7 @@
 
 > **语言切换：** [English](./README_en.md) | 中文
 
-华为云 ECS MCP Server 家族的共享工具库。本包服务于 **ecs**（`mcp_server_ecs`）与
+华为云 ECS MCP Server 家族的共享工具库。本包服务于 **ecs-readonly**（`mcp_server_ecs_readonly`）与
 **ecs-lifecycle**（`mcp_server_ecs_lifecycle`）两个 server 包，避免两者重复实现
 SDK 响应转换与分页逻辑。
 
@@ -21,7 +21,7 @@ SDK 响应转换与分页逻辑。
 
 ## 开发
 
-本包是 `mcp-server-ecs` 与 `mcp-server-ecs-lifecycle` 的本地路径依赖。除标准库外
+本包是 `mcp-server-ecs-readonly` 与 `mcp-server-ecs-lifecycle` 的本地路径依赖。除标准库外
 无运行时依赖。
 
 ```bash

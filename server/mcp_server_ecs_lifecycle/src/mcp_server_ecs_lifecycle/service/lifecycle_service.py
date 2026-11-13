@@ -107,6 +107,15 @@ def _encode_user_data(user_data: str | None) -> str | None:
     return encoded
 
 
+def _is_usable_subnet(subnet: dict[str, Any]) -> bool:
+    """A subnet can seed a create request only when all three link fields are set.
+
+    The catalog can hold entries with a null name or VPC id. Such an entry sorts
+    first on a name comparison and yields a null subnet_id/vpc_id downstream.
+    """
+    return all(subnet.get(key) for key in ("id", "name", "vpc_id"))
+
+
 class EcsLifecycleService:
     """Scenario orchestration for ECS lifecycle operations."""
 
@@ -236,8 +245,8 @@ class EcsLifecycleService:
             eip_bandwidth=eip_bandwidth,
         )
         user_data = _encode_user_data(user_data)
-        vpc_id, subnet_id, root_volume_type, defaults, subnet = await self._resolve_defaults(
-            vpc_id, subnet_id, root_volume_type
+        vpc_id, subnet_id, root_volume_type, defaults, subnet, reasons = (
+            await self._resolve_defaults(vpc_id, subnet_id, root_volume_type)
         )
         preview: dict[str, Any] = {
             "operation": "create_server",
@@ -262,6 +271,7 @@ class EcsLifecycleService:
             "is_auto_renew": is_auto_renew,
             "is_auto_rename": is_auto_rename,
             "defaults_applied": defaults,
+            "default_reasons": reasons,
         }
         if subnet is not None:
             preview["subnet"] = {
@@ -337,8 +347,8 @@ class EcsLifecycleService:
             count=count, admin_pass=admin_pass, key_name=key_name, eip_bandwidth=eip_bandwidth
         )
         user_data = _encode_user_data(user_data)
-        vpc_id, subnet_id, root_volume_type, defaults, subnet = await self._resolve_defaults(
-            vpc_id, subnet_id, root_volume_type
+        vpc_id, subnet_id, root_volume_type, defaults, subnet, reasons = (
+            await self._resolve_defaults(vpc_id, subnet_id, root_volume_type)
         )
         preview: dict[str, Any] = {
             "operation": "create_on_demand_server",
@@ -359,6 +369,7 @@ class EcsLifecycleService:
             "user_data": user_data,
             "is_auto_rename": is_auto_rename,
             "defaults_applied": defaults,
+            "default_reasons": reasons,
         }
         if subnet is not None:
             preview["subnet"] = {
@@ -534,51 +545,83 @@ class EcsLifecycleService:
         vpc_id: str | None,
         subnet_id: str | None,
         root_volume_type: str | None,
-    ) -> tuple[str, str, str, list[str], dict[str, Any] | None]:
+    ) -> tuple[str, str, str, list[str], dict[str, Any] | None, dict[str, str]]:
         """Fill omitted network/disk choices with server-side defaults.
 
         Both preview and confirm branches call this, so the preview always shows
-        the exact configuration that would be executed.
+        the exact configuration that would be executed. The last return value
+        explains each default, so a caller can tell an inferred value from one it
+        supplied itself.
         """
         defaults: list[str] = []
+        reasons: dict[str, str] = {}
         subnet_detail: dict[str, Any] | None = None
         if not subnet_id:
             subnets = await self._client.list_subnets()
-            if not subnets:
+            usable = [subnet for subnet in subnets if _is_usable_subnet(subnet)]
+            if vpc_id:
+                # A caller-supplied VPC must constrain the search, not be
+                # overwritten by a subnet from some other VPC.
+                in_vpc = [subnet for subnet in usable if subnet["vpc_id"] == vpc_id]
+                if not in_vpc:
+                    raise McpToolError(
+                        "MCP_NOT_FOUND",
+                        f"No usable subnet found in VPC {vpc_id}.",
+                        hint="Pass subnet_id explicitly, or omit vpc_id to use any VPC.",
+                    )
+                usable = in_vpc
+            if not usable:
                 raise McpToolError(
                     "MCP_NOT_FOUND",
-                    "No subnet found in this region; cannot pick a default network.",
-                    hint="Pass subnet_id explicitly to create the server.",
+                    "No usable subnet found in this region; cannot pick a default network.",
+                    hint="Pass subnet_id/vpc_id explicitly to create the server.",
                 )
-            chosen = min(subnets, key=lambda subnet: str(subnet.get("name") or ""))
-            subnet_id = chosen.get("id")
-            vpc_id = chosen.get("vpc_id")
+            chosen = min(usable, key=lambda subnet: str(subnet["name"]))
+            subnet_id = chosen["id"]
+            if not vpc_id:
+                vpc_id = chosen["vpc_id"]
+                defaults.append("vpc_id")
+                reasons["vpc_id"] = f"derived from the chosen subnet {chosen['id']}"
             subnet_detail = chosen
-            defaults.extend(["vpc_id", "subnet_id"])
+            defaults.append("subnet_id")
+            reasons["subnet_id"] = (
+                f"picked alphabetically by name from {len(usable)} usable subnet(s); "
+                "not a recommendation — pass subnet_id to pin the network"
+            )
         elif not vpc_id:
             # The create API needs the VPC owning the subnet; derive it from the
             # subnet catalog so users can pass just the subnet id.
-            for subnet in await self._client.list_subnets():
-                if subnet.get("id") == subnet_id:
-                    vpc_id = subnet.get("vpc_id")
-                    break
-            if not vpc_id:
+            matches = [
+                subnet
+                for subnet in await self._client.list_subnets()
+                if subnet.get("id") == subnet_id
+            ]
+            if not matches:
                 raise McpToolError(
                     "MCP_NOT_FOUND",
                     f"Subnet {subnet_id} not found in this region.",
                     hint="Pass vpc_id explicitly, or omit both to use the default subnet.",
                 )
+            if not _is_usable_subnet(matches[0]):
+                raise McpToolError(
+                    "MCP_NOT_FOUND",
+                    f"Subnet {subnet_id} exists but has no VPC link in the catalog.",
+                    hint="Pass vpc_id explicitly to create the server.",
+                )
+            vpc_id = matches[0]["vpc_id"]
             defaults.append("vpc_id")
+            reasons["vpc_id"] = f"derived from the subnet {subnet_id}"
         volume_type = root_volume_type or _DEFAULT_ROOT_VOLUME_TYPE
         if volume_type != root_volume_type:
             defaults.append("root_volume_type")
+            reasons["root_volume_type"] = f"fixed default {_DEFAULT_ROOT_VOLUME_TYPE}"
         if vpc_id is None or subnet_id is None:
             raise McpToolError(
                 "MCP_INTERNAL",
                 "Default network resolution left the VPC or subnet unspecified.",
                 hint="Pass vpc_id/subnet_id explicitly, or omit both for the default.",
             )
-        return vpc_id, subnet_id, volume_type, defaults, subnet_detail
+        return vpc_id, subnet_id, volume_type, defaults, subnet_detail, reasons
 
     @staticmethod
     def _describe_public_ip(eip_bandwidth: int | None) -> str:

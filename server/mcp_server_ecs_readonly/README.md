@@ -1,4 +1,4 @@
-# ECS MCP Server（弹性云服务器）
+# ECS Readonly MCP Server（弹性云服务器只读）
 
 > **语言切换：** [English](./README_en.md) | 中文
 
@@ -8,7 +8,7 @@
 
 ## 概述
 
-华为云 ECS（Elastic Cloud Server，弹性云服务器）的 MCP Server。让 MCP 客户端通过
+华为云 ECS（Elastic Cloud Server，弹性云服务器）的只读 MCP Server。让 MCP 客户端通过
 场景化工具审计云服务器使用情况：统计实例数量、分解开关机状态、盘点规格用量、
 汇总运行中实例的 vCPU/内存、审查公网/私网 IP 使用——面向 AI agent 的周期性
 资源盘点场景设计。
@@ -60,10 +60,10 @@ powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | ie
 
 ```bash
 git clone <仓库地址>
-cd huaweicloud-mcp/server/mcp_server_ecs
+cd huaweicloud-mcp/server/mcp_server_ecs_readonly
 uv sync
-uv run mcp-server-ecs          # stdio（默认）
-uv run mcp-server-ecs -t streamable-http
+uv run mcp-server-ecs-readonly          # stdio（默认）
+uv run mcp-server-ecs-readonly -t streamable-http
 ```
 
 ## 配置
@@ -75,7 +75,7 @@ uv run mcp-server-ecs -t streamable-http
 | `HUAWEICLOUD_ACCESS_KEY` | 是 | 账号 AK | - |
 | `HUAWEICLOUD_SECRET_KEY` | 是 | 账号 SK | - |
 | `HUAWEICLOUD_REGION` | 是 | 资源所在区域（如 `cn-north-4`） | - |
-| `HUAWEICLOUD_PROJECT_ID` | 否 | 手动覆盖 project_id（默认经 IAM 自动解析） | 自动解析 |
+| `HUAWEICLOUD_PROJECT_ID` | 是 | 资源所在项目的 project_id（控制台：我的凭证 > 项目列表，形如 `0610f92e7d124d4a9e4d8e8d95b4a4d0`） | - |
 | `HUAWEICLOUD_ENDPOINT` | 否 | 覆盖 ECS 接入点（SDK region 表之外的区域会自动按 `https://ecs.<region>.myhuaweicloud.com` 合成） | 自动合成 |
 | `HUAWEICLOUD_SECURITY_TOKEN` | 否 | STS 临时凭证 token | - |
 | `HUAWEICLOUD_MCP_READ_ONLY` | 否 | `true` 拦截所有 WRITE/DANGEROUS 工具 | `false` |
@@ -101,7 +101,7 @@ PyPI 版本：
     "mcpServers": {
         "huaweicloud-ecs": {
             "command": "uvx",
-            "args": ["mcp-server-ecs"],
+            "args": ["mcp-server-ecs-readonly"],
             "env": {
                 "HUAWEICLOUD_ACCESS_KEY": "",
                 "HUAWEICLOUD_SECRET_KEY": "",
@@ -121,8 +121,8 @@ git 仓库版本：
             "command": "uvx",
             "args": [
                 "--from",
-                "git+https://github.com/<org>/huaweicloud-mcp#subdirectory=server/mcp_server_ecs",
-                "mcp-server-ecs"
+                "git+https://github.com/<org>/huaweicloud-mcp#subdirectory=server/mcp_server_ecs_readonly",
+                "mcp-server-ecs-readonly"
             ],
             "env": {
                 "HUAWEICLOUD_ACCESS_KEY": "",

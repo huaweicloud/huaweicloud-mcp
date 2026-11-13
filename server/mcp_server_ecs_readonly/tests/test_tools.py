@@ -10,7 +10,7 @@ from typing import Any
 import pytest
 from huaweicloud_mcp_core.security import ToolRisk, get_tool_risk
 
-import mcp_server_ecs.server  # noqa: F401  (import registers all tools)
+import mcp_server_ecs_readonly.server  # noqa: F401  (import registers all tools)
 
 _TOOL_NAMES = {
     "list_servers",
@@ -28,7 +28,7 @@ def test_all_tools_declare_read_risk() -> None:
 
 
 async def test_tools_are_registered_on_server() -> None:
-    from mcp_server_ecs.server import mcp
+    from mcp_server_ecs_readonly.server import mcp
 
     tools = await mcp.list_tools()
     tool_names = {tool.name for tool in tools}
@@ -75,12 +75,12 @@ class StubService:
 @pytest.fixture
 def stub_service(monkeypatch: pytest.MonkeyPatch) -> StubService:
     stub = StubService({"count": 0})
-    monkeypatch.setattr("mcp_server_ecs.tools.ecs.EcsService", lambda: stub)
+    monkeypatch.setattr("mcp_server_ecs_readonly.tools.ecs.EcsService", lambda: stub)
     return stub
 
 
 async def test_list_servers_tool_passes_arguments(stub_service: StubService) -> None:
-    from mcp_server_ecs.tools.ecs import list_servers
+    from mcp_server_ecs_readonly.tools.ecs import list_servers
 
     result = await list_servers(name="web", status="ACTIVE", flavor="c7", limit=5)
     assert result == {"count": 0}
@@ -88,7 +88,7 @@ async def test_list_servers_tool_passes_arguments(stub_service: StubService) -> 
 
 
 async def test_analyze_tools_forward_without_arguments(stub_service: StubService) -> None:
-    from mcp_server_ecs.tools.ecs import (
+    from mcp_server_ecs_readonly.tools.ecs import (
         analyze_server_ips,
         analyze_server_resources,
         count_servers,
@@ -111,8 +111,8 @@ async def test_tool_error_becomes_error_envelope(monkeypatch: pytest.MonkeyPatch
         async def count_servers(self) -> dict[str, Any]:
             raise McpToolError("MCP_SDK_ERROR", "ECS is down.")
 
-    monkeypatch.setattr("mcp_server_ecs.tools.ecs.EcsService", lambda: FailingService({}))
-    from mcp_server_ecs.tools.ecs import count_servers
+    monkeypatch.setattr("mcp_server_ecs_readonly.tools.ecs.EcsService", lambda: FailingService({}))
+    from mcp_server_ecs_readonly.tools.ecs import count_servers
 
     result = await count_servers()
     assert result["error"]["code"] == "MCP_SDK_ERROR"
