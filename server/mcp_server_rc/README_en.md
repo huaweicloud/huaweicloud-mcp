@@ -91,16 +91,6 @@ curl -LsSf https://astral.sh/uv/install.sh | sh
 powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
 ```
 
-### Installation
-
-```bash
-git clone <repo-url>
-cd huaweicloud-mcp/server/mcp_server_rc
-uv sync
-uv run mcp-huaweicloud-rc          # stdio (default)
-uv run mcp-huaweicloud-rc -t streamable-http
-```
-
 ## Configuration
 
 ### Environment Variables
@@ -146,17 +136,30 @@ rules:
     message: Production RC resources are protected. Contact the ops team.
 ```
 
-### Run with uvx (from git)
+
+### Running
+
+#### Method 1: Run from source files (recommended)
+
+First, download the source code:
+
+```bash
+git clone https://github.com/huaweicloud/huaweicloud-mcp.git
+```
+
+Using Opencode as an example:
 
 ```json
 {
     "mcpServers": {
         "huaweicloud-rc": {
-            "command": "uvx",
+            "type": "local",
             "args": [
-                "--from",
-                "git+https://github.com/huaweicloud/huaweicloud-mcp#subdirectory=server/mcp_server_rc",
-                "mcp-huaweicloud-rc"
+                "uv",
+                "--directory",
+                "{directory where the code is located}/huaweicloud-mcp/server/mcp_server_rc",
+                "run",
+                "mcp-server-rc"
             ],
             "env": {
                 "HUAWEICLOUD_ACCESS_KEY": "",
@@ -166,6 +169,42 @@ rules:
     }
 }
 ```
+
+#### Method 2: Git repository uvx
+
+```json
+{
+    "mcpServers": {
+        "huaweicloud-rc": {
+            "command": "uvx",
+            "type": "local",
+            "args": [
+                "uvx",
+                "--from",
+                "git+https://github.com/huaweicloud/huaweicloud-mcp#subdirectory=server/mcp_server_rc",
+                "mcp-server-rc"
+            ],
+            "env": {
+                "HUAWEICLOUD_ACCESS_KEY": "",
+                "HUAWEICLOUD_SECRET_KEY": ""
+            }
+        }
+    }
+}
+```
+
+#### Method 3: Run as a Streamable-HTTP service
+
+Clone the code locally, then start the service:
+```bash
+git clone https://github.com/huaweicloud/huaweicloud-mcp.git
+cd huaweicloud-mcp/server/mcp_server_rc
+uv sync
+uv run mcp-server-rc -t streamable-http  # default port 8000
+```
+
+Configure it in the Agent using the streamable-http method.
+Configuration methods may vary between Agents; please refer to the Agent documentation for details.
 
 ## Examples
 

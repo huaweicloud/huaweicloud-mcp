@@ -39,10 +39,7 @@ def resolve_project_id(settings: McpSettings | None = None) -> str:
     if settings.security_token:
         credentials = credentials.with_security_token(settings.security_token)
     client = (
-        IamClient.new_builder()
-        .with_credentials(credentials)
-        .with_endpoint(_IAM_ENDPOINT)
-        .build()
+        IamClient.new_builder().with_credentials(credentials).with_endpoint(_IAM_ENDPOINT).build()
     )
     try:
         response = client.keystone_list_projects(KeystoneListProjectsRequest(name=settings.region))

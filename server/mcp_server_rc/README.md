@@ -90,16 +90,6 @@ curl -LsSf https://astral.sh/uv/install.sh | sh
 powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
 ```
 
-### 安装
-
-```bash
-git clone <仓库地址>
-cd huaweicloud-mcp/server/mcp_server_rc
-uv sync
-uv run mcp-huaweicloud-rc          # stdio（默认）
-uv run mcp-huaweicloud-rc -t streamable-http
-```
-
 ## 配置
 
 ### 环境变量
@@ -142,17 +132,29 @@ rules:
     message: 生产 RC 受保护，请联系运维。
 ```
 
-### uvx 运行（git 仓库版本）
+### 运行
+
+#### 方式1: 源文件运行（推荐）
+
+先下载源码：
+
+```
+git clone https://github.com/huaweicloud/huaweicloud-mcp.git
+```
+
+以使用 Opencode 为例，参考如下方式配置 MCP：
 
 ```json
 {
     "mcpServers": {
         "huaweicloud-rc": {
-            "command": "uvx",
+            "type": "local",
             "args": [
-                "--from",
-                "git+https://github.com/huaweicloud/huaweicloud-mcp#subdirectory=server/mcp_server_rc",
-                "mcp-huaweicloud-rc"
+                "uv",
+                "--directory",
+                "{代码所在目录}/huaweicloud-mcp/server/mcp_server_rc",
+                "run",
+                "mcp-server-rc"
             ],
             "env": {
                 "HUAWEICLOUD_ACCESS_KEY": "",
@@ -162,6 +164,42 @@ rules:
     }
 }
 ```
+
+#### 方式2: git 仓库版本
+
+```json
+{
+    "mcpServers": {
+        "huaweicloud-rc": {
+            "command": "uvx",
+            "type": "local",
+            "args": [
+                "uvx",
+                "--from",
+                "git+https://github.com/huaweicloud/huaweicloud-mcp#subdirectory=server/mcp_server_rc",
+                "mcp-server-rc"
+            ],
+            "env": {
+                "HUAWEICLOUD_ACCESS_KEY": "",
+                "HUAWEICLOUD_SECRET_KEY": ""
+            }
+        }
+    }
+}
+```
+
+#### 方式3: 以 Streamable-HTTP 服务方式运行
+
+克隆代码到本地，然后启动服务
+
+```bash
+git clone https://github.com/huaweicloud/huaweicloud-mcp.git
+cd huaweicloud-mcp/server/mcp_server_rc
+uv sync
+uv run mcp-server-rc -t streamable-http  # 默认端口8000
+```
+
+在 Agent 中配置，以 streamable-http 方式配置即可。不同 Agent 配置方式可能不相同，具体请查看 Agent 文档。
 
 ## 示例
 

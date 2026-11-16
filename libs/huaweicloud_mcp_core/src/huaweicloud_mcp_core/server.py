@@ -33,9 +33,7 @@ def build_server(service_name: str, settings: McpSettings | None = None) -> MCPS
 
 def run_standard(server: MCPServer, service_name: str) -> None:
     """Unified entrypoint: parse -t/--transport and run the server."""
-    parser = argparse.ArgumentParser(
-        description=f"Run the huaweicloud-{service_name} MCP Server"
-    )
+    parser = argparse.ArgumentParser(description=f"Run the huaweicloud-{service_name} MCP Server")
     parser.add_argument(
         "--transport",
         "-t",

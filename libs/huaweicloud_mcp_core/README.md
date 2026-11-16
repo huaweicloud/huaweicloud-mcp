@@ -23,6 +23,7 @@ mcp = build_server("myservice")
 
 from myservice.tools import thing  # noqa: F401  (import registers tools)
 
+
 def main() -> None:
     run_standard(mcp, service_name="myservice")
 ```

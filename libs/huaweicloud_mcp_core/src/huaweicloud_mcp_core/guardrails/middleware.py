@@ -19,9 +19,7 @@ from huaweicloud_mcp_core.guardrails.masking import MaskingEngine
 from huaweicloud_mcp_core.guardrails.rules import Rule, RuleHit, evaluate_rules, strictest_hit
 from huaweicloud_mcp_core.security import ToolRisk, get_tool_risk, tool_supports_confirm
 
-CallNext = Callable[
-    [ServerRequestContext[Any, Any]], Awaitable[Any]
-]
+CallNext = Callable[[ServerRequestContext[Any, Any]], Awaitable[Any]]
 
 
 class GuardrailsMiddleware:
@@ -67,7 +65,13 @@ class GuardrailsMiddleware:
             decision = "blocked"
             error_code = exc.code
             return self._finish(
-                started, tool_name, risk, decision, rules_hit, error_code, arguments,
+                started,
+                tool_name,
+                risk,
+                decision,
+                rules_hit,
+                error_code,
+                arguments,
                 self._error_result(exc),
             )
         except Exception as exc:
@@ -82,7 +86,13 @@ class GuardrailsMiddleware:
                 )
                 error_code = error.code
                 return self._finish(
-                    started, tool_name, risk, decision, rules_hit, error_code, arguments,
+                    started,
+                    tool_name,
+                    risk,
+                    decision,
+                    rules_hit,
+                    error_code,
+                    arguments,
                     self._error_result(error),
                 )
 
@@ -104,13 +114,25 @@ class GuardrailsMiddleware:
                 )
                 error_code = error.code
                 return self._finish(
-                    started, tool_name, risk, decision, rules_hit, error_code, arguments,
+                    started,
+                    tool_name,
+                    risk,
+                    decision,
+                    rules_hit,
+                    error_code,
+                    arguments,
                     self._error_result(error),
                 )
             if action == "confirm":
                 decision = "confirm_required"
                 return self._finish(
-                    started, tool_name, risk, decision, rules_hit, error_code, arguments,
+                    started,
+                    tool_name,
+                    risk,
+                    decision,
+                    rules_hit,
+                    error_code,
+                    arguments,
                     self._confirm_result(hits),
                 )
             warn_hits = hits
@@ -121,14 +143,26 @@ class GuardrailsMiddleware:
             decision = "blocked"
             error_code = exc.code
             return self._finish(
-                started, tool_name, risk, decision, rules_hit, error_code, arguments,
+                started,
+                tool_name,
+                risk,
+                decision,
+                rules_hit,
+                error_code,
+                arguments,
                 self._error_result(exc),
             )
         except Exception as exc:
             error = McpToolError("MCP_SDK_ERROR", str(exc))
             error_code = error.code
             return self._finish(
-                started, tool_name, risk, decision, rules_hit, error_code, arguments,
+                started,
+                tool_name,
+                risk,
+                decision,
+                rules_hit,
+                error_code,
+                arguments,
                 self._error_result(error),
             )
 
@@ -218,9 +252,7 @@ class GuardrailsMiddleware:
     def _error_result(self, error: McpToolError) -> CallToolResult:
         payload = error.to_dict()
         return CallToolResult(
-            content=[
-                TextContent(type="text", text=json.dumps(payload, ensure_ascii=False))
-            ],
+            content=[TextContent(type="text", text=json.dumps(payload, ensure_ascii=False))],
             structured_content=payload,
             is_error=False,
         )

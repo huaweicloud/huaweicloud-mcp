@@ -6,18 +6,19 @@
 from __future__ import annotations
 
 import json
+from pathlib import Path
 from typing import Any
 
-import pytest
-
 from mcp import Client
+from mcp.server.mcpserver import MCPServer
+from mcp.types import TextContent
 
 from huaweicloud_mcp_core.config import McpSettings
 from huaweicloud_mcp_core.security import ToolRisk, guard
 from huaweicloud_mcp_core.server import build_server
 
 
-def _make_server(settings: McpSettings | None = None) -> Any:
+def _make_server(settings: McpSettings | None = None) -> MCPServer:
     server = build_server("test", settings)
 
     @server.tool()
@@ -28,11 +29,17 @@ def _make_server(settings: McpSettings | None = None) -> Any:
     return server
 
 
+def _first_text(result: Any) -> str:
+    first = result.content[0]
+    assert isinstance(first, TextContent)
+    return first.text
+
+
 async def test_roundtrip_through_middleware() -> None:
     server = _make_server()
     async with Client(server) as client:
         result = await client.call_tool("echo_name", {"name": "abc"})
-    payload = json.loads(result.content[0].text)
+    payload = json.loads(_first_text(result))
     assert payload == {"echo": "abc"}
 
 
@@ -46,7 +53,7 @@ async def test_read_only_settings_reach_middleware() -> None:
 
     async with Client(server) as client:
         result = await client.call_tool("touch_widget", {"widget_id": "w-1"})
-    payload = json.loads(result.content[0].text)
+    payload = json.loads(_first_text(result))
     assert payload["error"]["code"] == "MCP_READ_ONLY"
 
 
@@ -61,7 +68,7 @@ async def test_registered_tools_are_listed() -> None:
     assert [tool.name for tool in tools] == ["echo_name"]
 
 
-def test_build_server_uses_yaml_rules_when_configured(tmp_path: object) -> None:
+def test_build_server_uses_yaml_rules_when_configured(tmp_path: Path) -> None:
     config = tmp_path / "guardrails.yaml"
     config.write_text(
         'rules:\n  - id: r1\n    action: warn\n    tools: ["echo_*"]\n',

@@ -57,16 +57,6 @@ curl -LsSf https://astral.sh/uv/install.sh | sh
 powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
 ```
 
-### Installation
-
-```bash
-git clone <repo-url>
-cd huaweicloud-mcp/server/mcp_server_rfs
-uv sync
-uv run mcp-huaweicloud-rfs          # stdio (default)
-uv run mcp-huaweicloud-rfs -t streamable-http
-```
-
 ## Configuration
 
 ### Environment Variables
@@ -93,19 +83,29 @@ A resource that only carries a protection tag on the cloud side (not present in
 the arguments) is matched by the second defense line: `delete_stack` re-checks
 the stack's real attributes before the irreversible call.
 
-### Run with uvx
+### Running
 
-From the git repository:
+#### Method 1: Run from source files (recommended)
+
+First, download the source code:
+
+```bash
+git clone https://github.com/huaweicloud/huaweicloud-mcp.git
+```
+
+Using Opencode as an example:
 
 ```json
 {
     "mcpServers": {
         "huaweicloud-rfs": {
-            "command": "uvx",
+            "type": "local",
             "args": [
-                "--from",
-                "git+https://github.com/huaweicloud/huaweicloud-mcp#subdirectory=server/mcp_server_rfs",
-                "mcp-huaweicloud-rfs"
+                "uv",
+                "--directory",
+                "{directory where the code is located}/huaweicloud-mcp/server/mcp_server_rfs",
+                "run",
+                "mcp-server-rfs"
             ],
             "env": {
                 "HUAWEICLOUD_ACCESS_KEY": "",
@@ -116,6 +116,43 @@ From the git repository:
     }
 }
 ```
+
+#### Method 2: Git repository uvx
+
+```json
+{
+    "mcpServers": {
+        "huaweicloud-rfs": {
+            "command": "uvx",
+            "type": "local",
+            "args": [
+                "uvx",
+                "--from",
+                "git+https://github.com/huaweicloud/huaweicloud-mcp#subdirectory=server/mcp_server_rfs",
+                "mcp-server-rfs"
+            ],
+            "env": {
+                "HUAWEICLOUD_ACCESS_KEY": "",
+                "HUAWEICLOUD_SECRET_KEY": "",
+                "HUAWEICLOUD_REGION": ""
+            }
+        }
+    }
+}
+```
+
+#### Method 3: Run as a Streamable-HTTP service
+
+Clone the code locally, then start the service:
+```bash
+git clone https://github.com/huaweicloud/huaweicloud-mcp.git
+cd huaweicloud-mcp/server/mcp_server_rfs
+uv sync
+uv run mcp-server-rfs -t streamable-http  # default port 8000
+```
+
+Configure it in the Agent using the streamable-http method.
+Configuration methods may vary between Agents; please refer to the Agent documentation for details.
 
 ## Examples
 

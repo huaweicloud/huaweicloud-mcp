@@ -11,6 +11,11 @@ Huawei Cloud MCP Server shared repository: provides MCP tools for each Huawei Cl
 - **[RFS MCP](server/mcp_server_rfs/README_en.md)**: Resource Formation Service — one-click HCL template deployment as stacks, dry-run preview for execution plans, root-cause diagnosis for failed deployments, secure decommissioning.
 - **[RC MCP](server/mcp_server_rc/README_en.md)**: Resource Center — global resource search and group management, resource relationship queries, advanced ResourceQL queries.
 
+### Compute
+
+- **[ECS Readonly MCP](server/mcp_server_ecs_readonly)**: Elastic Cloud Server readonly — read-only inventory of instance count / power status / flavor usage / running vCPUs & memory / public & private IPs, for periodic resource auditing scenarios.
+- **[ECS Lifecycle MCP](server/mcp_server_ecs_lifecycle)**: Elastic Cloud Server lifecycle — creation (prepaid/postpaid, smart defaults + user_data/EIP slots), modification, deletion, details / listing / async job queries, image / flavor / keypair discovery queries. All mutation tools enforce two-phase confirmation (preview first, `confirm=true` to execute), then re-check protection rules before execution — agents never act on their own.
+
 ## Developer Documentation
 
 The complete development guide is available at [docs/development/](docs/development/README.md), split into 10 feature-focused documents: core package modular API, tool scenario methodology, service/client layers, guardrails, output & errors, three-tier testing, hands-on service creation from scratch, engineering & release. Reference implementation: `server/mcp_server_rfs/`; scaffold: `docs/development/template/`.
@@ -28,7 +33,7 @@ The complete development guide is available at [docs/development/](docs/developm
 cd server/mcp_server_rfs
 uv sync
 export HUAWEICLOUD_ACCESS_KEY=... HUAWEICLOUD_SECRET_KEY=... HUAWEICLOUD_REGION=cn-north-4
-uv run mcp_server_rfs
+uv run mcp-server-rfs
 ```
 
 ## New Service Onboarding

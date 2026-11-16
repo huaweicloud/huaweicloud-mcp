@@ -111,8 +111,10 @@ def assert_not_protected(
     rules = rules if rules is not None else load_rules()
     tags = extract_tag_set(resource.get("tags") or {})
     for rule in rules:
-        if rule.tools and tool_name and not any(
-            fnmatch.fnmatchcase(tool_name, pattern) for pattern in rule.tools
+        if (
+            rule.tools
+            and tool_name
+            and not any(fnmatch.fnmatchcase(tool_name, pattern) for pattern in rule.tools)
         ):
             continue
         hit = match_resource(
@@ -124,8 +126,7 @@ def assert_not_protected(
         if hit:
             raise McpToolError(
                 code="MCP_GUARDRAIL_BLOCKED",
-                message=rule.message
-                or f"Resource matches protection rule '{rule.id}' ({hit}).",
+                message=rule.message or f"Resource matches protection rule '{rule.id}' ({hit}).",
                 hint=(
                     f"Request an exemption for rule '{rule.id}' or remove the resource "
                     "from the protection list (HUAWEICLOUD_MCP_PROTECTED_* or "

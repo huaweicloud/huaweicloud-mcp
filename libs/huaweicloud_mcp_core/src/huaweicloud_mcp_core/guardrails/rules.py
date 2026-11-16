@@ -50,9 +50,7 @@ class Rule:
             fnmatch.fnmatchcase(tool_name, pattern) for pattern in self.tools
         ):
             return False
-        if self.risks and risk not in self.risks:
-            return False
-        return True
+        return not self.risks or risk in self.risks
 
 
 @dataclass(frozen=True)
@@ -81,9 +79,7 @@ def load_rules(settings: McpSettings | None = None) -> list[Rule]:
                 action="block",
                 message="Resource name is in the protected list (HUAWEICLOUD_MCP_PROTECTED_NAMES).",
                 resources=ResourceSpec(
-                    name_patterns=tuple(
-                        f"^{re.escape(name)}$" for name in settings.protected_names
-                    )
+                    name_patterns=tuple(f"^{re.escape(name)}$" for name in settings.protected_names)
                 ),
             )
         )

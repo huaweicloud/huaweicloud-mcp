@@ -106,9 +106,7 @@ class StackService:
     ) -> dict[str, Any]:
         limit = clamp_limit(limit)
         response = await self._client.list_stacks(limit=limit, marker=marker)
-        stacks = [
-            _pick(stack, _STACK_FIELDS) for stack in response.get("stacks") or []
-        ]
+        stacks = [_pick(stack, _STACK_FIELDS) for stack in response.get("stacks") or []]
         if name:
             stacks = [
                 stack
@@ -163,7 +161,10 @@ class StackService:
                         f"Stack '{stack_name}' is in progress ({status}); "
                         "concurrent deploys are not allowed."
                     ),
-                    hint="Check progress with get_stack, then deploy again once it reaches a terminal state.",
+                    hint=(
+                        "Check progress with get_stack, then deploy again once it "
+                        "reaches a terminal state."
+                    ),
                 )
             deployment = await self._client.deploy_stack(
                 stack_name=stack_name,
@@ -188,9 +189,7 @@ class StackService:
                 result["outputs"] = await self._fetch_outputs(stack_name)
         hints = ["Track progress with get_stack or diagnose_stack."]
         if str(result.get("status")) in _FAILED:
-            hints.append(
-                "Deployment failed; run diagnose_stack to locate the failing resource."
-            )
+            hints.append("Deployment failed; run diagnose_stack to locate the failing resource.")
         result["hints"] = hints
         return result
 
@@ -244,18 +243,13 @@ class StackService:
             stack_name=stack_name, limit=clamp_limit(event_limit)
         )
         resources_raw = await self._client.list_stack_resources(stack_name=stack_name)
-        events = [
-            _pick(event, _EVENT_FIELDS)
-            for event in events_raw.get("stack_events") or []
-        ]
+        events = [_pick(event, _EVENT_FIELDS) for event in events_raw.get("stack_events") or []]
         events.sort(key=lambda item: str(item.get("event_time") or ""), reverse=True)
         resources = [
             _pick(resource, _RESOURCE_FIELDS)
             for resource in resources_raw.get("stack_resources") or []
         ]
-        failed_events = [
-            event for event in events if "FAIL" in str(event.get("status") or "")
-        ]
+        failed_events = [event for event in events if "FAIL" in str(event.get("status") or "")]
         failed_resources = [
             resource for resource in resources if "FAIL" in str(resource.get("status") or "")
         ]
@@ -267,7 +261,8 @@ class StackService:
             latest = failed_events[0]
             analysis.append(
                 f"Most recent failure: resource '{latest.get('resource_name')}' "
-                f"({latest.get('resource_type')}) — {latest.get('status_reason') or 'no reason recorded'}."
+                f"({latest.get('resource_type')}) — "
+                f"{latest.get('status_reason') or 'no reason recorded'}."
             )
         if status == "ROLLBACK_FAILED":
             analysis.append(
@@ -309,7 +304,9 @@ class StackService:
             raise McpToolError(
                 code="MCP_DELETION_PROTECTED",
                 message=f"Stack '{stack_name}' has deletion protection enabled.",
-                hint="Disable deletion protection (deploy_stack update or console) before deleting.",
+                hint=(
+                    "Disable deletion protection (deploy_stack update or console) before deleting."
+                ),
             )
         if not confirm:
             resources_raw = await self._client.list_stack_resources(stack_name=stack_name)
@@ -402,15 +399,17 @@ class StackService:
                 raise McpToolError(
                     code="MCP_EXECUTION_PLAN_FAILED",
                     message=(
-                        f"Execution plan creation failed: "
-                        f"{plan.get('status_message') or status}"
+                        f"Execution plan creation failed: {plan.get('status_message') or status}"
                     ),
                     hint="Fix the template or variables and retry preview_stack_changes.",
                 )
             if time.monotonic() >= deadline:
                 raise McpToolError(
                     code="MCP_TIMEOUT",
-                    message=f"Execution plan '{plan_id}' did not become AVAILABLE in {timeout_seconds}s.",
+                    message=(
+                        f"Execution plan '{plan_id}' did not become AVAILABLE in "
+                        f"{timeout_seconds}s."
+                    ),
                     hint="Retry preview_stack_changes or increase timeout_seconds.",
                 )
             await asyncio.sleep(_POLL_INTERVAL_SECONDS)

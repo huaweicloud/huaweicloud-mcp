@@ -33,9 +33,7 @@ class MaskingEngine:
     """Masks Huawei Cloud credentials and secret-like values on every output path."""
 
     def __init__(self, extra_patterns: tuple[ExtraPattern, ...] = ()) -> None:
-        self._patterns = tuple(
-            (name, re.compile(pattern)) for name, pattern in extra_patterns
-        )
+        self._patterns = tuple((name, re.compile(pattern)) for name, pattern in extra_patterns)
 
     def mask_text(self, text: str) -> str:
         for pattern in _VALUE_PATTERNS:

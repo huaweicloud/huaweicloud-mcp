@@ -30,24 +30,24 @@ cp -r docs/development/template server/mcp_server_vpc
 
 然后**全局替换命名三件套**（见 [01-architecture.md](01-architecture.md)）：
 
-| PLACEHOLDER | 替换为 |
-|---|---|
-| `mcp_server_PLACEHOLDER`（dist 名） | `mcp_server_vpc` |
-| `mcp_server_PLACEHOLDER`（import 名/目录名） | `mcp_server_vpc` |
-| `PLACEHOLDER`（service_name、SDK 包名等） | `vpc` |
+| PLACEHOLDER | 替换为 | 说明 |
+|---|---|---|
+| `mcp-server-PLACEHOLDER`（dist 名 / 可执行命令） | `mcp-server-vpc` | 中划线分隔 |
+| `mcp_server_PLACEHOLDER`（import 名 / 目录名 / Python 包名） | `mcp_server_vpc` | 下划线分隔 |
+| `PLACEHOLDER`（service_name、SDK 包名等） | `vpc` | — |
 
 替换后 `pyproject.toml` 的关键三行：
 
 ```toml
 [project]
-name = "mcp_server_vpc"
+name = "mcp-server-vpc"
 [project.scripts]
-mcp_server_vpc = "mcp_server_vpc.main:main"
+mcp-server-vpc = "mcp_server_vpc.main:main"
 [tool.hatch.build.targets.wheel]
 packages = ["src/mcp_server_vpc"]
 ```
 
-> dist 名 ≠ import 名，hatchling 无法自动定位包——`[tool.hatch.build.targets.wheel] packages` 必须显式配置。
+> dist 名（中划线 `mcp-server-vpc`）与 import 名（下划线 `mcp_server_vpc`）不同，hatchling 无法自动定位包——`[tool.hatch.build.targets.wheel] packages` 必须显式配置。
 
 ## 8.3 第三步：client 层（对照 API 文档，自底向上开发）
 
@@ -266,8 +266,8 @@ uv sync
 uv run ruff check && uv run ruff format --check   # 风格
 uv run mypy                                         # 类型（strict）
 uv run pytest --cov                                 # 测试 + 覆盖率 ≥ 80%
-uv run mcp_server_vpc                          # stdio smoke
-uv run mcp_server_vpc -t streamable-http       # http smoke
+uv run mcp-server-vpc                          # stdio smoke
+uv run mcp-server-vpc -t streamable-http       # http smoke
 ```
 
 VPC 当前状态：**ruff✓ / mypy strict✓（0 issues）/ 26 测试✓ / 覆盖率 92%**。

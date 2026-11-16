@@ -16,7 +16,6 @@ from huaweicloud_mcp_core.guardrails.protect import (
 )
 from huaweicloud_mcp_core.guardrails.rules import ResourceSpec, Rule
 
-
 SPEC = ResourceSpec(
     ids=("stack-123",),
     id_prefixes=("prod-",),
