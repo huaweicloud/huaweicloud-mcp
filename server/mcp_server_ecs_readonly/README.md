@@ -92,36 +92,28 @@ uv run mcp-server-ecs-readonly -t streamable-http
 显式传入的标签。本服务器为纯只读——不暴露任何删除/关机/重建类工具——因此保护
 护栏在本服务中主要承担输出脱敏与审计职责，而非写操作拦截。
 
-### uvx 运行
+### 运行
 
-PyPI 版本：
+#### 方式1: 源文件运行（推荐）
 
-```json
-{
-    "mcpServers": {
-        "huaweicloud-ecs": {
-            "command": "uvx",
-            "args": ["mcp-server-ecs-readonly"],
-            "env": {
-                "HUAWEICLOUD_ACCESS_KEY": "",
-                "HUAWEICLOUD_SECRET_KEY": "",
-                "HUAWEICLOUD_REGION": ""
-            }
-        }
-    }
-}
+先下载源码：
+
+```
+git clone https://github.com/huaweicloud/huaweicloud-mcp.git
 ```
 
-git 仓库版本：
+以使用 Opencode 为例，参考如下方式配置 MCP：
 
 ```json
 {
     "mcpServers": {
-        "huaweicloud-ecs": {
-            "command": "uvx",
+        "huaweicloud-ecs-readonly": {
+            "type": "local",
             "args": [
-                "--from",
-                "git+https://github.com/<org>/huaweicloud-mcp#subdirectory=server/mcp_server_ecs_readonly",
+                "uv",
+                "--directory",
+                "{代码所在目录}/huaweicloud-mcp/server/mcp_server_ecs_readonly",
+                "run",
                 "mcp-server-ecs-readonly"
             ],
             "env": {
@@ -133,6 +125,43 @@ git 仓库版本：
     }
 }
 ```
+
+#### 方式2: git 仓库版本
+
+```json
+{
+    "mcpServers": {
+        "huaweicloud-ecs-readonly": {
+            "command": "uvx",
+            "type": "local",
+            "args": [
+                "uvx",
+                "--from",
+                "git+https://github.com/huaweicloud/huaweicloud-mcp#subdirectory=server/mcp_server_ecs_readonly",
+                "mcp-server-ecs-readonly"
+            ],
+            "env": {
+                "HUAWEICLOUD_ACCESS_KEY": "",
+                "HUAWEICLOUD_SECRET_KEY": "",
+                "HUAWEICLOUD_REGION": ""
+            }
+        }
+    }
+}
+```
+
+#### 方式3: 以 Streamable-HTTP 服务方式运行
+
+克隆代码到本地，然后启动服务
+
+```bash
+git clone https://github.com/huaweicloud/huaweicloud-mcp.git
+cd huaweicloud-mcp/server/mcp_server_ecs_readonly
+uv sync
+uv run mcp-server-ecs-readonly -t streamable-http  # 默认端口8000
+```
+
+在 Agent 中配置，以 streamable-http 方式配置即可。不同 Agent 配置方式可能不相同，具体请查看 Agent 文档。
 
 ## 示例
 

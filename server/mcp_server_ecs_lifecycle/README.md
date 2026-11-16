@@ -71,16 +71,6 @@ curl -LsSf https://astral.sh/uv/install.sh | sh
 powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
 ```
 
-### 安装
-
-```bash
-git clone <仓库地址>
-cd huaweicloud-mcp/server/mcp_server_ecs_lifecycle
-uv sync
-uv run mcp-server-ecs-lifecycle          # stdio（默认）
-uv run mcp-server-ecs-lifecycle -t streamable-http
-```
-
 ## 配置
 
 ### 环境变量
@@ -121,36 +111,28 @@ IP（仅解绑），除非显式传入 `delete_volume=true` / `delete_publicip=t
 返回 `MCP_NOT_FOUND`，此时请显式传 ID。不传 `security_group_id` 时由 API 挂
 默认安全组；不传 `eip_bandwidth` 时不分配公网 IP。
 
-### uvx 运行
+### 运行
 
-PyPI 版本：
+#### 方式1: 源文件运行（推荐）
 
-```json
-{
-    "mcpServers": {
-        "huaweicloud-ecs-lifecycle": {
-            "command": "uvx",
-            "args": ["mcp-server-ecs-lifecycle"],
-            "env": {
-                "HUAWEICLOUD_ACCESS_KEY": "",
-                "HUAWEICLOUD_SECRET_KEY": "",
-                "HUAWEICLOUD_REGION": ""
-            }
-        }
-    }
-}
+先下载源码：
+
+```
+git clone https://github.com/huaweicloud/huaweicloud-mcp.git
 ```
 
-git 仓库版本：
+以使用 Opencode 为例，参考如下方式配置 MCP：
 
 ```json
 {
     "mcpServers": {
         "huaweicloud-ecs-lifecycle": {
-            "command": "uvx",
+            "type": "local",
             "args": [
-                "--from",
-                "git+https://github.com/<org>/huaweicloud-mcp#subdirectory=server/mcp_server_ecs_lifecycle",
+                "uv",
+                "--directory",
+                "{代码所在目录}/huaweicloud-mcp/server/mcp_server_ecs_lifecycle",
+                "run",
                 "mcp-server-ecs-lifecycle"
             ],
             "env": {
@@ -162,6 +144,43 @@ git 仓库版本：
     }
 }
 ```
+
+#### 方式2: git 仓库版本
+
+```json
+{
+    "mcpServers": {
+        "huaweicloud-ecs-lifecycle": {
+            "command": "uvx",
+            "type": "local",
+            "args": [
+                "uvx",
+                "--from",
+                "git+https://github.com/huaweicloud/huaweicloud-mcp#subdirectory=server/mcp_server_ecs_lifecycle",
+                "mcp-server-ecs-lifecycle"
+            ],
+            "env": {
+                "HUAWEICLOUD_ACCESS_KEY": "",
+                "HUAWEICLOUD_SECRET_KEY": "",
+                "HUAWEICLOUD_REGION": ""
+            }
+        }
+    }
+}
+```
+
+#### 方式3: 以 Streamable-HTTP 服务方式运行
+
+克隆代码到本地，然后启动服务
+
+```bash
+git clone https://github.com/huaweicloud/huaweicloud-mcp.git
+cd huaweicloud-mcp/server/mcp_server_ecs_lifecycle
+uv sync
+uv run mcp-server-ecs-lifecycle -t streamable-http  # 默认端口8000
+```
+
+在 Agent 中配置，以 streamable-http 方式配置即可。不同 Agent 配置方式可能不相同，具体请查看 Agent 文档。
 
 ## 示例
 

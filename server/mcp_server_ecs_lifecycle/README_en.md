@@ -79,16 +79,6 @@ curl -LsSf https://astral.sh/uv/install.sh | sh
 powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
 ```
 
-### Installation
-
-```bash
-git clone <repo-url>
-cd huaweicloud-mcp/server/mcp_server_ecs_lifecycle
-uv sync
-uv run mcp-server-ecs-lifecycle          # stdio (default)
-uv run mcp-server-ecs-lifecycle -t streamable-http
-```
-
 ## Configuration
 
 ### Environment Variables
@@ -132,36 +122,28 @@ confirm against the real values. If the region has no subnets (or the given
 IDs then. Without `security_group_id` the API attaches the project default
 security group; without `eip_bandwidth` no public IP is assigned.
 
-### Run with uvx
+### Running
 
-From PyPI:
+#### Method 1: Run from source files (recommended)
 
-```json
-{
-    "mcpServers": {
-        "huaweicloud-ecs-lifecycle": {
-            "command": "uvx",
-            "args": ["mcp-server-ecs-lifecycle"],
-            "env": {
-                "HUAWEICLOUD_ACCESS_KEY": "",
-                "HUAWEICLOUD_SECRET_KEY": "",
-                "HUAWEICLOUD_REGION": ""
-            }
-        }
-    }
-}
+First, download the source code:
+
+```bash
+git clone https://github.com/huaweicloud/huaweicloud-mcp.git
 ```
 
-From the git repository:
+Using Opencode as an example:
 
 ```json
 {
     "mcpServers": {
         "huaweicloud-ecs-lifecycle": {
-            "command": "uvx",
+            "type": "local",
             "args": [
-                "--from",
-                "git+https://github.com/<org>/huaweicloud-mcp#subdirectory=server/mcp_server_ecs_lifecycle",
+                "uv",
+                "--directory",
+                "{directory where the code is located}/huaweicloud-mcp/server/mcp_server_ecs_lifecycle",
+                "run",
                 "mcp-server-ecs-lifecycle"
             ],
             "env": {
@@ -173,6 +155,43 @@ From the git repository:
     }
 }
 ```
+
+#### Method 2: Git repository uvx
+
+```json
+{
+    "mcpServers": {
+        "huaweicloud-ecs-lifecycle": {
+            "command": "uvx",
+            "type": "local",
+            "args": [
+                "uvx",
+                "--from",
+                "git+https://github.com/huaweicloud/huaweicloud-mcp#subdirectory=server/mcp_server_ecs_lifecycle",
+                "mcp-server-ecs-lifecycle"
+            ],
+            "env": {
+                "HUAWEICLOUD_ACCESS_KEY": "",
+                "HUAWEICLOUD_SECRET_KEY": "",
+                "HUAWEICLOUD_REGION": ""
+            }
+        }
+    }
+}
+```
+
+#### Method 3: Run as a Streamable-HTTP service
+
+Clone the code locally, then start the service:
+```bash
+git clone https://github.com/huaweicloud/huaweicloud-mcp.git
+cd huaweicloud-mcp/server/mcp_server_ecs_lifecycle
+uv sync
+uv run mcp-server-ecs-lifecycle -t streamable-http  # default port 8000
+```
+
+Configure it in the Agent using the streamable-http method.
+Configuration methods may vary between Agents; please refer to the Agent documentation for details.
 
 ## Examples
 
