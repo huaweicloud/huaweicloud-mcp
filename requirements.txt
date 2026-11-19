@@ -1,6 +1,0 @@
-# Test dependencies for CI pipeline
-# These are installed by .cloudbuild/buildtest.yml before running tests/run_tests.py
-pytest>=8.0
-pytest-asyncio>=0.23
-pytest-cov>=5.0
-coverage>=7.0
