@@ -1,6 +1,6 @@
 # 07 · 单元测试开发
 
-> 参考实现：`server/mcp_server_rfs/tests/`（test_client.py / test_service.py / test_tools.py / conftest.py）。
+> 参考实现：`server/mcp_huaweicloud_rfs/tests/`（test_client.py / test_service.py / test_tools.py / conftest.py）。
 > 本章贴 RFS 真实测试代码，讲清每层"测什么、怎么注入、断言什么"。
 
 ## 7.1 测试基线（硬门槛）
@@ -334,7 +334,7 @@ async def test_deploy_rejects_both_template_channels(service) -> None:
 
 ```python
 async def test_deploy_wait_polls_until_complete(service, fake_client, monkeypatch) -> None:
-    monkeypatch.setattr("mcp_server_rfs.service.stack_service._POLL_INTERVAL_SECONDS", 0)  # 跳过等待
+    monkeypatch.setattr("mcp_huaweicloud_rfs.service.stack_service._POLL_INTERVAL_SECONDS", 0)  # 跳过等待
     register_stack(fake_client, "web", status="DEPLOYMENT_IN_PROGRESS")
     fake_client.status_queue = ["DEPLOYMENT_COMPLETE"]    # 第一次查询后变 COMPLETE
     fake_client.outputs["web"] = [{"output_key": "eip", "output_value": "1.1.1.1"}]
@@ -392,10 +392,10 @@ async def test_delete_respects_deletion_protection(service, fake_client) -> None
 ### 测注册完整性
 
 ```python
-import mcp_server_rfs.server  # noqa: F401  (import 即注册所有工具)
+import mcp_huaweicloud_rfs.server  # noqa: F401  (import 即注册所有工具)
 
 async def test_tools_are_registered_on_server() -> None:
-    from mcp_server_rfs.server import mcp
+    from mcp_huaweicloud_rfs.server import mcp
     tools = await mcp.list_tools()
     tool_names = {tool.name for tool in tools}
     assert tool_names == {                          # 6 个工具全注册了
@@ -440,17 +440,17 @@ class StubService:
 @pytest.fixture
 def stub_service(monkeypatch) -> StubService:
     stub = StubService({"items": [], "count": 0})
-    monkeypatch.setattr("mcp_server_rfs.tools.stack.StackService", lambda: stub)  # 替换类
+    monkeypatch.setattr("mcp_huaweicloud_rfs.tools.stack.StackService", lambda: stub)  # 替换类
     return stub
 
 async def test_list_stacks_tool_passes_arguments(stub_service) -> None:
-    from mcp_server_rfs.tools.stack import list_stacks
+    from mcp_huaweicloud_rfs.tools.stack import list_stacks
     result = await list_stacks(name="web", limit=5)
     assert result == {"items": [], "count": 0}
     assert stub_service.calls == [{"name": "web", "limit": 5, "marker": None}]   # 参数透传
 
 async def test_delete_tool_passes_confirm(stub_service) -> None:
-    from mcp_server_rfs.tools.stack import delete_stack
+    from mcp_huaweicloud_rfs.tools.stack import delete_stack
     await delete_stack(stack_name="web", retain_resources=True, confirm=True)
     assert stub_service.calls == [{"stack_name": "web", "retain_resources": True, "confirm": True}]
 ```
@@ -467,8 +467,8 @@ async def test_tool_error_becomes_error_envelope(monkeypatch) -> None:
         async def get_stack(self, *, stack_name) -> dict:
             raise McpToolError("MCP_NOT_FOUND", f"Stack '{stack_name}' not found.")
 
-    monkeypatch.setattr("mcp_server_rfs.tools.stack.StackService", lambda: FailingService({}))
-    from mcp_server_rfs.tools.stack import get_stack
+    monkeypatch.setattr("mcp_huaweicloud_rfs.tools.stack.StackService", lambda: FailingService({}))
+    from mcp_huaweicloud_rfs.tools.stack import get_stack
 
     result = await get_stack("ghost")
     assert result["error"]["code"] == "MCP_NOT_FOUND"     # 异常 → 错误信封

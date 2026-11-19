@@ -1,6 +1,6 @@
 ---
 name: huaweicloud-mcp-dev
-description: 'Use when developing Huawei Cloud MCP servers/tools in this repo: creating a new mcp_server_* service, adding or modifying MCP tools, wiring the three-layer architecture, declaring tool risk/guardrails, or onboarding a new Huawei Cloud service. Triggers: mcp_server_, MCP tool, MCP server, 新建服务, 添加工具, 接入新服务, 三层架构, 场景化工具, 护栏, guard, ToolRisk, assert_not_protected, build_server, huaweicloud-mcp. NOT for: running hcloud CLI operations on existing cloud resources (use huawei-ecs / huawei-obs / huawei-vpc etc.), or non-MCP application code.'
+description: 'Use when developing Huawei Cloud MCP servers/tools in this repo: creating a new mcp_huaweicloud_* service, adding or modifying MCP tools, wiring the three-layer architecture, declaring tool risk/guardrails, or onboarding a new Huawei Cloud service. Triggers: mcp_huaweicloud_, MCP tool, MCP server, 新建服务, 添加工具, 接入新服务, 三层架构, 场景化工具, 护栏, guard, ToolRisk, assert_not_protected, build_server, huaweicloud-mcp. NOT for: running hcloud CLI operations on existing cloud resources (use huawei-ecs / huawei-obs / huawei-vpc etc.), or non-MCP application code.'
 version: 1
 ---
 
@@ -10,7 +10,7 @@ version: 1
 Authoritative detail lives in `docs/development/` (repo root); this skill is the
 fast-action condensation. When a decision needs depth, read the cited section.
 
-The reference implementation is `server/mcp_server_rfs/` (RFS, full tests) — copy
+The reference implementation is `server/mcp_huaweicloud_rfs/` (RFS, full tests) — copy
 its shape, do not invent.
 
 ## Tech stack (non-negotiable)
@@ -27,15 +27,15 @@ its shape, do not invent.
 
 ```
 libs/huaweicloud_mcp_core/   # shared core: config/credentials/errors/security/guardrails/output/server
-server/mcp_server_<svc>/     # one package per Huawei Cloud service
-  src/mcp_server_<svc>/{tools,service,client}/   # THREE LAYERS (mandatory)
+server/mcp_huaweicloud_<svc>/     # one package per Huawei Cloud service
+  src/mcp_huaweicloud_<svc>/{tools,service,client}/   # THREE LAYERS (mandatory)
   tests/
 docs/development/template/    # scaffold (see onboarding, §13)
 ```
 
-Naming triplet must agree: dist `mcp_server_<svc>` / import `mcp_server_<svc>` /
-script `mcp_server_<svc>`. dist != import, so pyproject MUST declare
-`[tool.hatch.build.targets.wheel] packages = ["src/mcp_server_<svc>"]` (spec §5.1, §16 B.8).
+Naming triplet must agree: dist `mcp-huaweicloud-<svc>` / import `mcp_huaweicloud_<svc>` /
+script `mcp-huaweicloud-<svc>`. dist != import, so pyproject MUST declare
+`[tool.hatch.build.targets.wheel] packages = ["src/mcp_huaweicloud_<svc>"]` (spec §5.1, §16 B.8).
 
 ## The three layers (mandatory, unidirectional tools -> service -> client)
 
@@ -45,7 +45,7 @@ script `mcp_server_<svc>`. dist != import, so pyproject MUST declare
 | service | `service/` | orchestration; multi-API composition; pagination clamp; field whitelist; confirm preview; `assert_not_protected` before irreversible ops | build SDK client; know about MCP framework |
 | client | `client/` | thin async wrapper (`asyncio.to_thread`) around sync SDK; 404->None; `wrap_sdk_error` | business logic; reshape responses |
 
-See spec §4, §5 for templates; `server/mcp_server_rfs/` for a worked example.
+See spec §4, §5 for templates; `server/mcp_huaweicloud_rfs/` for a worked example.
 
 ## Scenario-based tools (spec §6) — this is NOT 1-API-per-tool
 
@@ -96,7 +96,7 @@ Output masking is always on (AK/SK/token/password-field/PEM/Bearer). Audit is al
 ## Onboarding a new service (spec §13) — follow in order
 
 1. Issue: service name, 5–15 scenario list, risk-level distribution.
-2. Scaffold: `cp -r docs/development/template server/mcp_server_<svc>`, replace the naming triplet.
+2. Scaffold: `cp -r docs/development/template server/mcp_huaweicloud_<svc>`, replace the naming triplet.
 3. Build bottom-up: `client/` (vs API docs) -> `service/` (orchestration + whitelist) -> `tools/` (@guard + docstring).
 4. Self-test: `uv run pytest` (>=80%); run the server + drive each tool via MCP Inspector / Cursor.
 5. Docs: bilingual README.md + README_zh.md (fixed section template, spec §12); update repo README service table.
@@ -125,18 +125,17 @@ Output masking is always on (AK/SK/token/password-field/PEM/Bearer). Audit is al
 ## Verification commands
 
 ```bash
-cd server/mcp_server_<svc>
+cd server/mcp_huaweicloud_<svc>
 uv sync
 uv run ruff check && uv run ruff format --check
 uv run mypy
 uv run pytest --cov
-uv run mcp_server_<svc>            # stdio; smoke with MCP Inspector / Cursor
-uv run mcp_server_<svc> -t streamable-http
+uv run mcp-huaweicloud-<svc> -t streamable-http
 ```
 
 ## Where to look
 
 - `docs/development/` — full spec (cited by section above); `DEVELOPMENT_SPEC2.md` is the legacy single-file backup
-- `server/mcp_server_rfs/` — reference implementation (client/service/tools/tests)
+- `server/mcp_huaweicloud_rfs/` — reference implementation (client/service/tools/tests)
 - `libs/huaweicloud_mcp_core/` — core package (config/credentials/guardrails/output/server)
 - `docs/development/template/` — scaffold for new services

@@ -97,7 +97,7 @@ addopts = "--cov=src --cov-report=term-missing --cov-fail-under=80"
 
 ## 9.5 CI 与 PR 流程（GitHub Actions）
 
-`ci.yml` 按变更路径触发（`server/mcp_server_<service>/**` 只跑该服务 + 核心包任务）：
+`ci.yml` 按变更路径触发（`server/mcp_huaweicloud_<service>/**` 只跑该服务 + 核心包任务）：
 
 1. `uv sync` → 2. `ruff check && ruff format --check` → 3. `mypy` → 4. `pytest --cov` → 5. 规范自检脚本：
    - 每个注册工具均有 `@guard(risk=...)`
@@ -145,20 +145,29 @@ addopts = "--cov=src --cov-report=term-missing --cov-fail-under=80"
 - **MINOR**：新增工具 / 新增可选参数
 - **PATCH**：修复、描述优化、依赖升级
 
-版本号唯一事实源是各包 `pyproject.toml`；tag 格式 `mcp_server_<service>/vx.y.z`（核心包 `huaweicloud-mcp-core/vx.y.z`）。
+版本号唯一事实源是各包 `pyproject.toml`；tag 格式 `mcp_huaweicloud_<service>/vx.y.z`（核心包 `huaweicloud-mcp-core/vx.y.z`）。
 
 ### 源码发布
 
 1.  **git subdirectory**：始终可安装：
    ```json
    {
-     "mcpServers": {
-       "huaweicloud-vpc": {
-         "command": "uvx",
-         "args": ["--from", "git+https://github.com/huaweicloud/huaweicloud-mcp#subdirectory=server/mcp_server_vpc", "mcp_server_vpc"],
-         "env": { "HUAWEICLOUD_ACCESS_KEY": "", "HUAWEICLOUD_SECRET_KEY": "", "HUAWEICLOUD_REGION": "" }
-       }
-     }
+      "mcpServers": {
+         "huaweicloud-rc": {
+            "command": "uvx",
+            "type": "local",
+            "args": [
+               "uvx",
+               "--from",
+               "git+https://github.com/huaweicloud/huaweicloud-mcp#subdirectory=server/mcp_huaweicloud_vpc",
+               "mcp-huaweicloud-vpc"
+            ],
+            "env": {
+               "HUAWEICLOUD_ACCESS_KEY": "",
+               "HUAWEICLOUD_SECRET_KEY": ""
+            }
+         }
+      }
    }
    ```
 
@@ -184,13 +193,12 @@ addopts = "--cov=src --cov-report=term-missing --cov-fail-under=80"
 ## 9.9 验证命令速查
 
 ```bash
-cd server/mcp_server_<service>
+cd server/mcp_huaweicloud_<service>
 uv sync
 uv run ruff check && uv run ruff format --check    # 风格
 uv run mypy src tests                               # 类型（strict）
 uv run pytest --cov                                 # 测试 + 覆盖率
-uv run mcp_server_<service>                # stdio smoke
-uv run mcp_server_<service> -t streamable-http   # http smoke
+uv run mcp-huaweicloud-<service> -t streamable-http   # http smoke
 ```
 
 返回 [README.md](README.md)。

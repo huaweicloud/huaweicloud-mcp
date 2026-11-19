@@ -1,6 +1,6 @@
 # 04 · service 与 client 层：编排与 SDK 封装
 
-> 参考实现：`server/mcp_server_rfs/src/mcp_server_rfs/{service,client}/`。
+> 参考实现：`server/mcp_huaweicloud_rfs/src/mcp_huaweicloud_rfs/{service,client}/`。
 
 ## 4.1 三层依赖回顾
 
