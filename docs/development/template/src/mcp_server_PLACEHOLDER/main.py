@@ -3,7 +3,7 @@
 
 """Huawei Cloud PLACEHOLDER MCP Server entrypoint."""
 
-from mcp_server_PLACEHOLDER.server import mcp
+from mcp_huaweicloud_PLACEHOLDER.server import mcp
 from huaweicloud_mcp_core.server import run_standard
 
 

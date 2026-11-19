@@ -46,7 +46,7 @@ to_native_path() {
 # Format per entry: "short_name:relative_dir_from_repo_root:has_dev_tools"
 #
 # short_name:
-#   server/mcp_server_<svc>  -> <svc>
+#   server/mcp_huaweicloud_<svc>  -> <svc>
 #   libs/<name>              -> <name>
 #
 # has_dev_tools: "yes" if pyproject.toml mentions both ruff and mypy (i.e. they
@@ -74,11 +74,11 @@ for dir in "$REPO_ROOT"/libs/*/; do
   PACKAGES+=("$name:libs/$name:$has_tools")
 done
 
-# Scan server/mcp_server_*
-for dir in "$REPO_ROOT"/server/mcp_server_*/; do
+# Scan server/mcp_huaweicloud_*
+for dir in "$REPO_ROOT"/server/mcp_huaweicloud_*/; do
   [[ -d "$dir" ]] || continue
   full="$(basename "$dir")"
-  short="${full#mcp_server_}"
+  short="${full#mcp_huaweicloud_}"
   has_tools="$(check_dev_tools "$dir")"
   PACKAGES+=("$short:server/$full:$has_tools")
 done
@@ -113,7 +113,7 @@ for arg in "$@"; do
 done
 
 if [[ ${#PACKAGES[@]} -eq 0 ]]; then
-  echo "[ERROR] No packages found under libs/ or server/mcp_server_*/"
+  echo "[ERROR] No packages found under libs/ or server/mcp_huaweicloud_*/"
   exit 1
 fi
 

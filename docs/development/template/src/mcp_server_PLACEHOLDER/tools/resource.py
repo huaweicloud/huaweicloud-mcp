@@ -9,8 +9,8 @@ from typing import Any
 
 from huaweicloud_mcp_core.security import ToolRisk, guard
 
-from mcp_server_PLACEHOLDER.server import mcp
-from mcp_server_PLACEHOLDER.service.resource_service import ResourceService
+from mcp_huaweicloud_PLACEHOLDER.server import mcp
+from mcp_huaweicloud_PLACEHOLDER.service.resource_service import ResourceService
 
 
 @mcp.tool()

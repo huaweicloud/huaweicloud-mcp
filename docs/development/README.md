@@ -19,12 +19,11 @@
 
 | 服务 | 位置 | 验证状态 | 说明 |
 |---|---|---|---|
-| RFS | [`server/mcp_server_rfs/`](../../server/mcp_server_rfs) | 完整三层测试 | 最早的参考实现，6 工具 |
-| VPC | [`server/mcp_server_vpc/`](../../server/mcp_server_vpc) | ruff✓ / mypy strict✓ / 26 测试✓ / 覆盖率 92% | 实战篇产物，4 工具覆盖三级风险 + 护栏双防线 |
+| RFS | [`server/mcp_huaweicloud_rfs/`](../../server/mcp_huaweicloud_rfs) | 完整三层测试 | 最早的参考实现，6 工具 |
 
 ## 脚手架
 
-- [`template/`](template) — 可运行最小骨架，`PLACEHOLDER` 待替换。新服务从 `cp -r docs/development/template server/mcp_server_<service>` 起步。
+- [`template/`](template) — 可运行最小骨架，`PLACEHOLDER` 待替换。新服务从 `cp -r docs/development/template server/mcp_huaweicloud_<service>` 起步。
 
 ## 新服务开发者最小路径
 

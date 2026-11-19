@@ -47,7 +47,7 @@ huaweicloud_mcp_core/
     └── middleware.py  # GuardrailsMiddleware（唯一拦截点）
 ```
 
-下面逐模块讲**职责、关键签名、用法示例**。示例均与 `server/mcp_server_rfs/` 真实代码对齐。
+下面逐模块讲**职责、关键签名、用法示例**。示例均与 `server/mcp_huaweicloud_rfs/` 真实代码对齐。
 
 ---
 
@@ -89,7 +89,7 @@ class McpSettings:
 | 工具运行期（要调云 API） | `require_credentials=True`（默认） | 缺 AK/SK/REGION 直接抛错 |
 | 启动期构建 server、`--help`、跑测试导入 | `require_credentials=False` | 不校验凭证，延迟到真正调用时才校验 |
 
-这个区分保证了 `uv run mcp_server_rfs --help` 不会因为没配凭证而崩溃，也保证了测试可以 `import` 模块而不触发凭证校验。`build_server()` 内部用的就是 `require_credentials=False`。
+这个区分保证了 `uv run mcp-huaweicloud-rfs --help` 不会因为没配凭证而崩溃，也保证了测试可以 `import` 模块而不触发凭证校验。`build_server()` 内部用的就是 `require_credentials=False`。
 
 ### 用法
 
@@ -274,7 +274,7 @@ def reset_registries() -> None: ...   # 测试间清登记表
 
 ```python
 from huaweicloud_mcp_core.security import ToolRisk, guard
-from mcp_server_rfs.server import mcp
+from mcp_huaweicloud_rfs.server import mcp
 
 @mcp.tool()
 @guard(risk=ToolRisk.DANGEROUS)
@@ -415,12 +415,12 @@ mcp = build_server("rfs")
 
 # import 即注册：tools 包内每个模块都会向该实例注册工具
 # 注意：必须在 mcp 赋值之后再 import，避免循环导入
-from mcp_server_rfs.tools import stack  # noqa: E402,F401
+from mcp_huaweicloud_rfs.tools import stack  # noqa: E402,F401
 ```
 
 `main.py`：
 ```python
-from mcp_server_rfs.server import mcp
+from mcp_huaweicloud_rfs.server import mcp
 from huaweicloud_mcp_core.server import run_standard
 
 def main() -> None:

@@ -11,7 +11,7 @@ from huaweicloud_mcp_core.errors import McpToolError
 from huaweicloud_mcp_core.guardrails import assert_not_protected
 from huaweicloud_mcp_core.output import clamp_limit, page_result, single_result
 
-from mcp_server_PLACEHOLDER.client.placeholder_client import PlaceholderClient
+from mcp_huaweicloud_PLACEHOLDER.client.placeholder_client import PlaceholderClient
 
 _RESOURCE_FIELDS = (
     "id",

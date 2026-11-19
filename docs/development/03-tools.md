@@ -1,6 +1,6 @@
 # 03 · 工具层：场景化方法论与 @guard
 
-> 参考实现：`server/mcp_server_rfs/src/mcp_server_rfs/tools/stack.py`。
+> 参考实现：`server/mcp_huaweicloud_rfs/src/mcp_huaweicloud_rfs/tools/stack.py`。
 
 ## 3.1 工具层做什么、不做什么
 
@@ -194,7 +194,7 @@ tools 按资源域分文件（`tools/instance.py`、`tools/image.py`），单文
 ```python
 # server.py
 mcp = build_server("rfs")
-from mcp_server_rfs.tools import stack  # noqa: E402,F401
+from mcp_huaweicloud_rfs.tools import stack  # noqa: E402,F401
 ```
 
 > 必须 `mcp` 赋值之后再 import tools，否则 `@mcp.tool()` 找不到实例（循环导入）。
