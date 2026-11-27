@@ -4,10 +4,10 @@ from types import SimpleNamespace
 from typing import Any
 
 from huaweicloud_mcp_core.errors import McpToolError
-from huaweicloud_mcp_core.guardrails.audit import AuditLogger
-from huaweicloud_mcp_core.guardrails.middleware import GuardrailsMiddleware
 from huaweicloud_mcp_core.security import ToolRisk, get_tool_risk, tool_supports_confirm
 
+from mcp_huaweicloud_gaussdb.compat.guardrails.audit import AuditLogger
+from mcp_huaweicloud_gaussdb.compat.guardrails.middleware import GuardrailsMiddleware
 from mcp_huaweicloud_gaussdb.server import mcp
 from mcp_huaweicloud_gaussdb.tools import (
     backup,
@@ -52,7 +52,7 @@ EXPECTED = {
 
 async def test_tools_registered_and_guarded() -> None:
     tools = await mcp.list_tools()
-    assert mcp.version == "0.1.0"
+    assert mcp.version == "0.1.1"
     assert {tool.name for tool in tools} == set(EXPECTED)
     assert {name: get_tool_risk(name) for name in EXPECTED} == EXPECTED
     assert all(

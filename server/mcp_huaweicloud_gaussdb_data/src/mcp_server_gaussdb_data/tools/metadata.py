@@ -1,0 +1,111 @@
+"""元数据工具：schema / 表 / 字段浏览（全部 READ，参数化查询，标识符白名单校验）。
+
+注册模式与 tools/sql.py 一致：@guard 裸函数，由 server.build_sql_server 统一
+add_tool 注册。复用 sql.py 的延迟初始化池与行格式化（同一池、同一配置读取）。
+标识符虽经参数化传入，仍先过白名单正则：information_schema 查询本身安全，
+但严格校验让非法输入在触库前即被拒（fail-early，也便于调用方自查拼写）。
+"""
+
+import asyncio
+import re
+from typing import Any
+
+from huaweicloud_mcp_core import ToolRisk, guard
+from huaweicloud_mcp_core.errors import McpToolError
+
+from ..credentials import DbCredentials
+from ..das import _cursor
+from .sql import _exec_failed, _format_rows, _pool, _settings
+
+# GaussDB 对象名允许 $（A 兼容模式，survey/03），故白名单含之；
+# 尾锚用 \Z 而非 $：$ 会放过末尾换行（"sch\n" 实测可通过）
+_IDENTIFIER = re.compile(r"^[A-Za-z_][A-Za-z0-9_$]*\Z")
+
+
+def _validate_identifier(value: str, name: str) -> str:
+    if not _IDENTIFIER.match(value or ""):
+        raise McpToolError(
+            "GAUSSDB_DATA_MCP_INVALID_IDENTIFIER",
+            f"{name} must match [A-Za-z_][A-Za-z0-9_$]*.",
+        )
+    return value
+
+
+def _query(sql: str, params: tuple, instance: str | None = None) -> dict[str, Any]:
+    settings = _settings()
+    creds = DbCredentials.load(settings, instance)
+    try:
+        with _pool(settings).read_connection(creds, settings=settings) as conn:
+            with _cursor(conn) as cur:
+                cur.execute(sql, params)
+                return _format_rows(cur, settings)
+    except McpToolError:
+        raise
+    except Exception as exc:
+        raise _exec_failed(exc) from exc
+
+
+@guard(risk=ToolRisk.READ)
+async def gaussdb_list_schemas(instance: str | None = None) -> dict[str, Any]:
+    """List database schemas visible to the MCP account.
+
+    Scenario: discover the schema layout before picking tables.
+    Not for listing tables within a schema; use gaussdb_list_tables for table
+    discovery, or gaussdb_describe_table for column details.
+    """
+    return await asyncio.to_thread(
+        _query, "SELECT schema_name FROM information_schema.schemata ORDER BY schema_name", (), instance
+    )
+
+
+@guard(risk=ToolRisk.READ)
+async def gaussdb_list_tables(
+    schema: str = "public", instance: str | None = None
+) -> dict[str, Any]:
+    """List tables and views in a schema.
+
+    Scenario: find candidate tables for a query.
+    Not for listing schemas; use gaussdb_list_schemas for schema discovery.
+    Not for column details; use gaussdb_describe_table for column information.
+
+    Args:
+        schema: Schema name, default public.
+    """
+    _validate_identifier(schema, "schema")
+    ph = "%s"  # das 轨位置参数占位符
+    return await asyncio.to_thread(
+        _query,
+        f"SELECT table_name, table_type FROM information_schema.tables "
+        f"WHERE table_schema = {ph} ORDER BY table_name",
+        (schema,), instance,
+    )
+
+
+@guard(risk=ToolRisk.READ)
+async def gaussdb_describe_table(
+    schema: str, table: str, instance: str | None = None
+) -> dict[str, Any]:
+    """Describe columns of a table: name, type, nullability, default, comment.
+
+    Scenario: understand column semantics before writing SQL.
+    Not for listing all tables; use gaussdb_list_tables to discover tables first.
+
+    Args:
+        schema: Schema name.
+        table: Table name.
+    """
+    _validate_identifier(schema, "schema")
+    _validate_identifier(table, "table")
+    ph = "%s"
+    return await asyncio.to_thread(
+        _query,
+        # 列注释存在 pg_description（与 information_schema 分离），经 col_description
+        # 按 (表 oid, 序号) 取——驱动无关，GaussDB 507 本地与云实例均实测可用
+        f"SELECT c.column_name, c.data_type, c.is_nullable, c.column_default, "
+        f"col_description(pc.oid, c.ordinal_position) AS column_comment "
+        f"FROM information_schema.columns c "
+        f"JOIN pg_class pc ON pc.relname = c.table_name "
+        f"JOIN pg_namespace pn ON pn.oid = pc.relnamespace AND pn.nspname = c.table_schema "
+        f"WHERE c.table_schema = {ph} AND c.table_name = {ph} ORDER BY c.ordinal_position",
+        (schema, table), instance,
+    )
